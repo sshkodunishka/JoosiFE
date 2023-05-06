@@ -18,10 +18,9 @@ const Home: React.FC = () => {
   return (
     <Observer>
       {() => {
-        const { appName, isLoadingDanceStyles, danceStyles, token } =
-          commonStore;
+        const { appName, isLoadingDanceStyles, danceStyles } = commonStore;
         return (
-          <Box>
+          <Box sx={{ width: '90%', height: '100%' }}>
             {/* <Banner
               token={token}
               appName={appName}
@@ -42,7 +41,14 @@ const Home: React.FC = () => {
                 item
                 xs={12}
                 md={3}>
-                <Box sx={{ bgcolor: '#f5f5f5', p: 2, m: 3, borderRadius: 3 }}>
+                <Box
+                  sx={{
+                    bgcolor: '#f5f5f5',
+                    p: 2,
+                    m: 3,
+                    borderRadius: 3,
+                    minWidth: '100px',
+                  }}>
                   <Typography sx={{ p: 1 }}>Dance Styles</Typography>
                   <DanceStyles
                     loading={isLoadingDanceStyles}

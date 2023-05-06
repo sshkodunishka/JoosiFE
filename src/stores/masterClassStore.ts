@@ -1,4 +1,8 @@
-import { MasterClass } from '@/services/masterClass';
+import {
+  CreateMasterClass,
+  MasterClass,
+  UpdateMasterClass,
+} from '@/services/masterClass';
 import { action, computed, makeObservable, observable } from 'mobx';
 
 const LIMIT = 10;
@@ -16,14 +20,16 @@ const mockedWorkflows: MasterClass[] = [
     creator: {
       id: 1,
       name: 'Kristina',
+      role: 'choreoghraph',
       lastName: '321',
       photoLink:
         'https://www.zelda.com/links-awakening/assets/img/home/hero-char.png',
     },
+    price: 20,
     danceStyles: [
       {
         id: 1,
-        name: 'style1',
+        style: 'style1',
       },
     ],
   },
@@ -36,17 +42,19 @@ const mockedWorkflows: MasterClass[] = [
       'https://www.zelda.com/links-awakening/assets/img/home/hero-char.png',
     videoLink:
       'https://www.zelda.com/links-awakening/assets/img/home/hero-char.png',
+    price: 20,
     creator: {
       id: 1,
       name: 'Kristina',
       lastName: '321',
+      role: 'choreoghraph',
       photoLink:
         'https://www.zelda.com/links-awakening/assets/img/home/hero-char.png',
     },
     danceStyles: [
       {
         id: 1,
-        name: 'style1',
+        style: 'style1',
       },
     ],
   },
@@ -77,12 +85,11 @@ export class MasterClassStore {
   }
 
   get masterClasss(): MasterClass[] {
-    const ret = [];
+    const masterClasses = [];
     for (let value of this.masterClasssRegistry.values()) {
-      ret.push(value);
+      masterClasses.push(value);
     }
-    console.log(ret);
-    return ret;
+    return masterClasses;
   }
 
   loadMasterClasss() {
@@ -92,8 +99,6 @@ export class MasterClassStore {
       this.masterClasssRegistry.set(masterClass.id, masterClass);
       this.totalPagesCount = Math.ceil(mockedWorkflows.length / LIMIT);
     }
-    console.log('masterClasssRegistry');
-    console.log(this.masterClasssRegistry);
     action(() => {
       this.isLoading = false;
     });
@@ -117,6 +122,9 @@ export class MasterClassStore {
     });
   }
   async deleteMasterClass(id: number) {}
+
+  async updateMasterClass(masterClass: UpdateMasterClass) {}
+  async createMasterClass(masterClass: CreateMasterClass) {}
 }
 
 export default new MasterClassStore();

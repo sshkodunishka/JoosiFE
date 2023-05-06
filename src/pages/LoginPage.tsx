@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Observer } from 'mobx-react-lite';
 import { useStore } from '@/store';
 import ListErrors from '@components/Errors/ListErrors';
@@ -15,18 +15,22 @@ import {
 
 const Login = (props: any) => {
   const { authStore } = useStore();
-
-  const handleEmailChange = (e: any) => authStore.setEmail(e.target.value);
+  const navigate = useNavigate();
+  const handleLoginChange = (e: any) => authStore.setLogin(e.target.value);
   const handlePasswordChange = (e: any) =>
     authStore.setPassword(e.target.value);
   const handleSubmitForm = (e: any) => {
     e.preventDefault();
     authStore
       .login()
-      .then(() => props.history.replace('/'))
-      .catch(() => {});
+      .then(() => {
+        navigate('/');
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
-  
+
   useEffect(() => {
     return () => authStore.reset();
   }, [authStore]);
@@ -36,8 +40,7 @@ const Login = (props: any) => {
       {() => {
         const { values, errors, inProgress } = authStore;
         return (
-          <Box
-            sx={{ mt: 3 }}>
+          <Box sx={{ mt: 3 }}>
             <Container maxWidth='sm'>
               <Box sx={{ mb: 3 }}>
                 <Typography
@@ -70,11 +73,11 @@ const Login = (props: any) => {
                     xs={12}>
                     <TextField
                       fullWidth
-                      label='Email'
-                      type='email'
+                      label='Login'
+                      type='text'
                       variant='outlined'
-                      value={values.email}
-                      onChange={handleEmailChange}
+                      value={values.login}
+                      onChange={handleLoginChange}
                     />
                   </Grid>
 

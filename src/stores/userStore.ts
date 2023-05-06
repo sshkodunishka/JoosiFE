@@ -1,17 +1,8 @@
+import { User } from '@/services/masterClass';
+import { getCurrentUserAPI } from '@/services/user-service';
 import { action, makeObservable, observable } from 'mobx';
 const agent: any = {};
 
-export type User = {
-  id: number;
-  email: string;
-  bio: string;
-  image: string;
-  token: string;
-  username: string;
-  createdAt: string;
-  updatedAt: string;
-  role: string;
-};
 
 export class UserStore {
   currentUser?: User;
@@ -31,11 +22,12 @@ export class UserStore {
     });
   }
 
-  pullUser() {
+  async pullUser() {
     this.loadingUser = true;
-    return agent.Auth.current()
+
+    return getCurrentUserAPI()
       .then(
-        action(({ user }: { user: User }) => {
+        action((user: User) => {
           this.currentUser = user;
         })
       )

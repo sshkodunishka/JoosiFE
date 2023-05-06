@@ -1,31 +1,45 @@
+import { DanceStyle, getAllDanceStylesAPI } from '@/services/dance-style';
 import { observable, action, reaction, makeObservable } from 'mobx';
 
 export class CommonStore {
   appName = 'Joose';
-  token = window.localStorage.getItem('jwt');
+  accessToken = window.localStorage.getItem('accessToken');
+  refreshToken = window.localStorage.getItem('refreshToken');
   appLoaded = false;
-  danceStyles: string[] = [];
+  danceStyles: DanceStyle[] = [];
   isLoadingDanceStyles = false;
 
   constructor() {
     makeObservable(this, {
       appName: observable,
-      token: observable,
+      accessToken: observable,
+      refreshToken: observable,
       appLoaded: observable,
       danceStyles: observable,
       isLoadingDanceStyles: observable,
       loadDanceStyles: action,
-      setToken: action,
+      setTokens: action,
       setAppLoaded: action,
     });
 
     reaction(
-      () => this.token,
+      () => this.refreshToken,
       (token) => {
         if (token) {
-          window.localStorage.setItem('jwt', token);
+          window.localStorage.setItem('refreshToken', token);
         } else {
-          window.localStorage.removeItem('jwt');
+          window.localStorage.removeItem('refreshToken');
+        }
+      }
+    );
+
+    reaction(
+      () => this.accessToken,
+      (token) => {
+        if (token) {
+          window.localStorage.setItem('accessToken', token);
+        } else {
+          window.localStorage.removeItem('accessToken');
         }
       }
     );
@@ -33,24 +47,23 @@ export class CommonStore {
 
   loadDanceStyles() {
     this.isLoadingDanceStyles = false;
-    this.danceStyles = [
-      'style1',
-      'style2',
-      'style3',
-      'style4',
-      'style5',
-      'style6',
-      'style7',
-      'style8',
-      'style9',
-    ];
-    // return agent.Tags.getAll()
-    //   .then(action(({ tags }: { tags: string[] }) => { this.tags = tags.map((t: string) => t.toLowerCase()); }))
-    //   .finally(action(() => { this.isLoadingTags = false; }))
+
+    return getAllDanceStylesAPI()
+      .then(
+        action((danceStyles: DanceStyle[]) => {
+          this.danceStyles = danceStyles;
+        })
+      )
+      .finally(
+        action(() => {
+          this.isLoadingDanceStyles = false;
+        })
+      );
   }
 
-  setToken(token: string | null) {
-    this.token = token;
+  setTokens(accessToken: string | null, refreshToken: string | null) {
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
   }
 
   setAppLoaded() {

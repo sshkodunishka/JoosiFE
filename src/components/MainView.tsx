@@ -8,6 +8,7 @@ import { Box, Tabs, Typography } from '@mui/material';
 import { isAction } from 'mobx';
 import Tab from '@mui/material/Tab';
 import MasterClassList from '@components/MasterClass/MasterClassList';
+import { DanceStyle } from '@/services/dance-style';
 
 interface LinkTabProps {
   label?: string;
@@ -105,9 +106,8 @@ const MainView: React.FC = () => {
     <Observer>
       {() => {
         const { currentUser } = userStore;
-        const { masterClasss, isLoading, page, totalPagesCount } = masterClassStore;
-        console.log('HEEEREEE');
-        console.log(masterClasss);
+        const { masterClasss, isLoading, page, totalPagesCount } =
+          masterClassStore;
         return (
           <Box sx={{ width: '100%', height: '100%' }}>
             <Box sx={{ mb: 4 }}>
@@ -119,13 +119,13 @@ const MainView: React.FC = () => {
                 />
                 <LinkTab
                   label='My MasterClasss'
-                  href='/#/?tab=my-masterClasss'
+                  href='/#/?tab=my-master-classes'
                   value='my-masterClasss'
                 />
                 {danceStyle && (
                   <LinkTab
                     label={`#${danceStyle}`}
-                    href={`/#/?tab=danceStyle&danceStyle=${danceStyle}`}
+                    href={`/#/?tab=danceStyle&dance-style=${danceStyle}`}
                     value='danceStyle'
                   />
                 )}

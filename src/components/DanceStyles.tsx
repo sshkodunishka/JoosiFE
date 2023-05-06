@@ -1,10 +1,11 @@
+import { DanceStyle } from '@/services/dance-style';
 import { Box, Chip, CircularProgress } from '@mui/material';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
 type Props = {
   loading: boolean;
-  danceStyles: string[];
+  danceStyles: DanceStyle[];
 };
 
 const DanceStyles: React.FC<Props> = (props) => {
@@ -14,19 +15,19 @@ const DanceStyles: React.FC<Props> = (props) => {
     return <CircularProgress />;
   } else if (danceStyles) {
     return (
-      <Box >
+      <Box>
         {danceStyles.map((danceStyle) => {
           return (
             <Chip
               component={Link}
               to={{
                 pathname: '/',
-                search: '?tab=danceStyle&danceStyle=' + danceStyle,
+                search: '?tab=danceStyle&danceStyle=' + danceStyle.id,
               }}
-              label={danceStyle}
+              label={danceStyle.style}
               clickable
               variant='outlined'
-              key={danceStyle}
+              key={danceStyle.id}
               style={{ marginRight: 8, marginBottom: 8 }}
             />
           );

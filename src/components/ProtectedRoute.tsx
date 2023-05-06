@@ -1,16 +1,15 @@
 import React from 'react';
-import { Route, Navigate } from 'react-router-dom';
-import { Observer } from 'mobx-react-lite';
+import { Navigate } from 'react-router-dom';
 import { useStore } from '../store';
-import { User } from '@/stores/userStore';
 
 type Props = {
   requiredRole?: string;
-  user: User | undefined;
   children: any;
 };
 
-const ProtectedRoute = ({ user, children, requiredRole }: Props) => {
+const ProtectedRoute = ({ children, requiredRole }: Props) => {
+  const { userStore } = useStore();
+  const user = userStore.currentUser;
   if (!user) {
     return (
       <Navigate
@@ -19,7 +18,7 @@ const ProtectedRoute = ({ user, children, requiredRole }: Props) => {
       />
     );
   }
-
+  console.log(user);
   if (requiredRole && user.role !== requiredRole) {
     return (
       <Navigate

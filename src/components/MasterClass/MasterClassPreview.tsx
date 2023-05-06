@@ -27,7 +27,7 @@ const MasterClassPreview: React.FC<Props> = (props) => {
               avatar={
                 <Link
                   underline='none'
-                  href={`#/@${masterClass.creator.name}`}>
+                  href={`#/@${masterClass.creator.id}`}>
                   <Avatar
                     sx={{ width: 50, height: 50 }}
                     src={masterClass.creator.photoLink}
@@ -57,7 +57,7 @@ const MasterClassPreview: React.FC<Props> = (props) => {
 
             <CardContent>
               <Link
-                href={`#/masterClass/${masterClass.id}`}
+                href={`#/master-classes/${masterClass.id}`}
                 className='preview-link'>
                 <Typography
                   variant='h5'

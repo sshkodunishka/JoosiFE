@@ -1,15 +1,21 @@
 import { observable, action, makeObservable } from 'mobx';
-import userStore, { User } from './userStore';
+import userStore from './userStore';
 import commonStore from './commonStore';
-const agent: any = {};
+import { loginAPI, registerAPI } from '@/services/auth-service';
+
+export interface Tokens {
+  acsess_token: string;
+  refresh_token: string;
+}
 
 export class AuthStore {
   inProgress = false;
   errors = undefined;
 
   values = {
-    username: '',
-    email: '',
+    name: '',
+    lastName: '',
+    login: '',
     password: '',
   };
 
@@ -18,8 +24,9 @@ export class AuthStore {
       inProgress: observable,
       errors: observable,
       values: observable,
-      setUsername: action,
-      setEmail: action,
+      setName: action,
+      setLastName: action,
+      setLogin: action,
       setPassword: action,
       reset: action,
       login: action,
@@ -28,12 +35,16 @@ export class AuthStore {
     });
   }
 
-  setUsername(username: string) {
-    this.values.username = username;
+  setName(name: string) {
+    this.values.name = name;
   }
 
-  setEmail(email: string) {
-    this.values.email = email;
+  setLastName(lastName: string) {
+    this.values.lastName = lastName;
+  }
+
+  setLogin(login: string) {
+    this.values.login = login;
   }
 
   setPassword(password: string) {
@@ -41,16 +52,19 @@ export class AuthStore {
   }
 
   reset() {
-    this.values.username = '';
-    this.values.email = '';
+    this.values.name = '';
+    this.values.lastName = '';
+    this.values.login = '';
     this.values.password = '';
   }
 
   login() {
     this.inProgress = true;
     this.errors = undefined;
-    return agent.Auth.login(this.values.email, this.values.password)
-      .then(({ user }: { user: User }) => commonStore.setToken(user.token))
+    return loginAPI(this.values.login, this.values.password)
+      .then((tokens: Tokens) =>
+        commonStore.setTokens(tokens.acsess_token, tokens.refresh_token)
+      )
       .then(() => userStore.pullUser())
       .catch(
         action((err: any) => {
@@ -69,12 +83,15 @@ export class AuthStore {
   register() {
     this.inProgress = true;
     this.errors = undefined;
-    return agent.Auth.register(
-      this.values.username,
-      this.values.email,
+    return registerAPI(
+      this.values.name,
+      this.values.lastName,
+      this.values.login,
       this.values.password
     )
-      .then(({ user }: { user: User }) => commonStore.setToken(user.token))
+      .then((tokens: Tokens) =>
+        commonStore.setTokens(tokens.acsess_token, tokens.refresh_token)
+      )
       .then(() => userStore.pullUser())
       .catch(
         action((err: any) => {
@@ -91,7 +108,7 @@ export class AuthStore {
   }
 
   logout() {
-    commonStore.setToken(null);
+    commonStore.setTokens(null, null);
     userStore.forgetUser();
     return Promise.resolve();
   }

@@ -7,7 +7,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import { Box, Typography } from '@mui/material';
+import {  Typography } from '@mui/material';
+import { User } from '@/services/masterClass';
 
 const LoggedOutView = (props: any) => {
   const { currentUser } = props;
@@ -41,7 +42,7 @@ const LoggedOutView = (props: any) => {
   return null;
 };
 
-const LoggedInView = (props: any) => {
+const LoggedInView = (props: { currentUser?: User }) => {
   const { currentUser } = props;
   if (currentUser) {
     return (
@@ -55,13 +56,37 @@ const LoggedInView = (props: any) => {
           to='/'>
           Home
         </Button>
-        <Button
-          color='inherit'
-          component={RouterLink}
-          to='/add-masterclass'>
-          <i className='ion-compose' />
-          New master class
-        </Button>
+        {/* Choreographer menu */}
+        {currentUser.role === 'choreographer' && (
+          <Button
+            color='inherit'
+            component={RouterLink}
+            to='/editor'>
+            <i className='ion-compose' />
+            New master class
+          </Button>
+        )}
+        {/* Admin menu */}
+        {currentUser.role === 'admin' && (
+          <Button
+            color='inherit'
+            component={RouterLink}
+            to='/dance-styles/editor'>
+            <i className='ion-compose' />
+            Dance Styles
+          </Button>
+        )}
+        {currentUser.role === 'admin' && (
+          <Button
+            color='inherit'
+            component={RouterLink}
+            to='/users/'>
+            <i className='ion-compose' />
+            Users
+          </Button>
+        )}
+        {/*  */}
+
         <Button
           color='inherit'
           component={RouterLink}
@@ -72,13 +97,13 @@ const LoggedInView = (props: any) => {
         <Button
           color='inherit'
           component={RouterLink}
-          to={`/@${currentUser.username}`}>
+          to={`/@${currentUser.name}`}>
           <Avatar
-            src={currentUser.image}
+            src={currentUser.photoLink}
             alt=''
             sx={{ mr: 1 }}
           />
-          {currentUser.username}
+          {currentUser.name}
         </Button>
       </Stack>
     );

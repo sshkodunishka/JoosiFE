@@ -9,14 +9,19 @@ import MasterClass from '@components/MasterClass/MasterClass';
 import { Box, Toolbar } from '@mui/material';
 import Footer from '@components/Footer';
 import ProtectedRoute from '@components/ProtectedRoute';
+import Editor from '@pages/Сhoreographer/MasterClassEditor';
+import AdminDanceStyles from '@pages/Admin/DanceStyles';
+import AdminUsers from '@pages/Admin/Users';
 
 const App: React.FC = () => {
   const { commonStore, userStore } = useStore();
   useEffect(() => {
-    if (commonStore.token) {
+    console.log(commonStore.accessToken);
+    if (commonStore.accessToken) {
       userStore.pullUser().finally(() => commonStore.setAppLoaded());
     }
   });
+
   return (
     <Router>
       <Box
@@ -40,6 +45,10 @@ const App: React.FC = () => {
           <Toolbar />
           <Routes>
             <Route
+              path='/'
+              element={<HomePage />}
+            />
+            <Route
               path='/login'
               element={<LoginPage />}
             />
@@ -48,21 +57,36 @@ const App: React.FC = () => {
               element={<RegisterPage />}
             />
             <Route
-              path='/masterClass/:id'
+              path='/master-classes/:id'
               element={<MasterClass />}
             />
+            {/* choreographer */}
             <Route
-              path='/'
-              element={<HomePage />}
-            />
-            <Route
-              path='add-masterclass'
+              path='/editor/:id?'
               element={
-                <ProtectedRoute user={userStore.currentUser}>
-                  <RegisterPage />
+                <ProtectedRoute requiredRole='choreographer'>
+                  <Editor />
                 </ProtectedRoute>
               }
             />
+            {/* admin  */}
+            <Route
+              path='/dance-styles/editor/:id?'
+              element={
+                <ProtectedRoute requiredRole='admin'>
+                  <AdminDanceStyles />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='/users/'
+              element={
+                <ProtectedRoute requiredRole='admin'>
+                  <AdminUsers />
+                </ProtectedRoute>
+              }
+            />
+
             {/* <PrivateRoute path="/settings" component={Settings} />
         <Route path="/@:username" component={Profile} />
         <Route path="/@:username/favorites" component={Profile} />

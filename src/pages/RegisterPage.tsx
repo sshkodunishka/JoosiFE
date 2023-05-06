@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Observer } from 'mobx-react-lite';
 import { useStore } from '../store';
 import ListErrors from '@components/Errors/ListErrors';
@@ -14,17 +14,24 @@ import {
 
 const Register: React.FC = (props: any) => {
   const { authStore } = useStore();
-  const handleUsernameChange = (e: any) =>
-    authStore.setUsername(e.target.value);
-  const handleEmailChange = (e: any) => authStore.setEmail(e.target.value);
+  const navigate = useNavigate();
+
+  const handleNameChange = (e: any) => authStore.setName(e.target.value);
+  const handleLastNameChange = (e: any) =>
+    authStore.setLastName(e.target.value);
+  const handleLoginChange = (e: any) => authStore.setLogin(e.target.value);
   const handlePasswordChange = (e: any) =>
     authStore.setPassword(e.target.value);
   const handleSubmitForm = (e: any) => {
     e.preventDefault();
     authStore
       .register()
-      .then(() => props.history.replace('/'))
-      .catch(() => {});
+      .then(() => {
+        navigate('/');
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   return (
@@ -67,26 +74,39 @@ const Register: React.FC = (props: any) => {
                   margin='normal'
                   required
                   fullWidth
-                  id='username'
-                  label='Username'
-                  name='username'
-                  autoComplete='username'
+                  id='name'
+                  label='Name'
+                  name='name'
+                  autoComplete='name'
                   autoFocus
-                  value={values.username}
-                  onChange={handleUsernameChange}
+                  value={values.name}
+                  onChange={handleNameChange}
                 />
 
                 <TextField
                   margin='normal'
                   required
                   fullWidth
-                  id='email'
-                  label='Email'
-                  name='email'
-                  autoComplete='email'
-                  type='email'
-                  value={values.email}
-                  onChange={handleEmailChange}
+                  id='lastName'
+                  label='Last Name'
+                  name='lastName'
+                  autoComplete='lastName'
+                  autoFocus
+                  value={values.lastName}
+                  onChange={handleLastNameChange}
+                />
+
+                <TextField
+                  margin='normal'
+                  required
+                  fullWidth
+                  id='login'
+                  label='Login'
+                  name='login'
+                  autoComplete='login'
+                  type='login'
+                  value={values.login}
+                  onChange={handleLoginChange}
                 />
 
                 <TextField
@@ -108,7 +128,7 @@ const Register: React.FC = (props: any) => {
                   variant='contained'
                   sx={{ mt: 3, mb: 2 }}
                   disabled={inProgress}>
-                  Sign in
+                  Sign up
                 </Button>
               </Box>
             </Box>
