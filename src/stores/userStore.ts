@@ -1,8 +1,7 @@
 import { User } from '@/services/masterClass';
 import { getCurrentUserAPI } from '@/services/user-service';
-import { action, makeObservable, observable } from 'mobx';
+import { action, makeObservable, observable, runInAction } from 'mobx';
 const agent: any = {};
-
 
 export class UserStore {
   currentUser?: User;
@@ -18,24 +17,17 @@ export class UserStore {
       updatingUserErrors: observable,
       pullUser: action,
       updateUser: action,
-      forgetUser: action,
+      signOut: action,
     });
   }
 
   async pullUser() {
     this.loadingUser = true;
-
-    return getCurrentUserAPI()
-      .then(
-        action((user: User) => {
-          this.currentUser = user;
-        })
-      )
-      .finally(
-        action(() => {
-          this.loadingUser = false;
-        })
-      );
+    const user = await getCurrentUserAPI();
+    runInAction(() => {
+      this.currentUser = user;
+      this.loadingUser = false;
+    });
   }
 
   updateUser(newUser: User) {
@@ -53,7 +45,7 @@ export class UserStore {
       );
   }
 
-  forgetUser() {
+  signOut() {
     this.currentUser = undefined;
   }
 }

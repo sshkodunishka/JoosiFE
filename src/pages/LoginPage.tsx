@@ -32,7 +32,7 @@ const Login = (props: any) => {
   };
 
   useEffect(() => {
-    return () => authStore.reset();
+    authStore.reset();
   }, [authStore]);
 
   return (
@@ -40,7 +40,7 @@ const Login = (props: any) => {
       {() => {
         const { values, errors, inProgress } = authStore;
         return (
-          <Box sx={{ mt: 3 }}>
+          <Box sx={{ mt: 15, height: '100%' }}>
             <Container maxWidth='sm'>
               <Box sx={{ mb: 3 }}>
                 <Typography

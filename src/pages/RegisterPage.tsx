@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Observer } from 'mobx-react-lite';
 import { useStore } from '../store';
@@ -34,16 +34,21 @@ const Register: React.FC = (props: any) => {
       });
   };
 
+  useEffect(() => {
+    authStore.reset();
+  }, [authStore]);
+
   return (
     <Observer>
       {() => {
         const { values, errors, inProgress } = authStore;
 
         return (
-          <Container maxWidth='sm'>
+          <Container
+            sx={{ mt: 15, height: '100%' }}
+            maxWidth='sm'>
             <Box
               sx={{
-                marginTop: 3,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',

@@ -1,41 +1,44 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
-import MasterClassActions from './MasterClassActions';
-import { Avatar, Box, Typography } from '@mui/material';
-import { MasterClass } from '@/services/masterClass';
+import { Avatar, Box, Card, Typography } from '@mui/material';
+import { Descriptions, MasterClass } from '@/services/masterClass';
 
 type Props = {
-  masterClass: MasterClass
-  canModify: boolean
-  onDelete: (id: number) => void
-}
+  description: Descriptions;
+};
 
-const MasterClassMeta = observer((props: Props) => {
-  const masterClass = props.masterClass;
+const MasterClassTrainer = observer((props: Props) => {
+  const description = props.description;
   return (
-    <Box sx={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 2,
-      flexWrap: 'wrap',
-    }}>
-      <Link to={`/@${masterClass.creator.name}`}>
-        <Avatar sizes='100px 200px' style={{ borderRadius: 10 }} src={masterClass.creator.photoLink} alt="" />
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        p: 1,
+      }}>
+      <Link to={`/users/${description.MasterClasses.Users.id}`}>
+        <Avatar
+          sx={{ width: 50, height: 50 }}
+          src={description.MasterClasses.Users.photoLink}
+          alt=''
+        />
       </Link>
 
-      <Box sx={{ flex: '1 1 100%' }}>
-        <Link to={`/@${masterClass.creator.photoLink}`}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-            {masterClass.creator.name}
+      <Box sx={{ ml: 2 }}>
+        <Link to={`/users/${description.MasterClasses.Users.id}`}>
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {description.MasterClasses.Users.name}
+          </Typography>
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {description.MasterClasses.Users.lastName}
           </Typography>
         </Link>
-        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          {new Date(masterClass.eventDate).toDateString()}
-        </Typography>
       </Box>
     </Box>
   );
 });
 
-export default MasterClassMeta;
+export default MasterClassTrainer;

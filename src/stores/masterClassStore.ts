@@ -1,81 +1,44 @@
 import {
+  CreateDescription,
   CreateMasterClass,
+  Descriptions,
   MasterClass,
   UpdateMasterClass,
+  createMasterClassAPI,
+  createMasterClassDescriptionAPI,
+  getDescriptionByIdAPI,
+  getUpcomingDescriptionsAPI,
+  cancelClassAPI,
+  signUpForClassAPI,
 } from '@/services/masterClass';
-import { action, computed, makeObservable, observable } from 'mobx';
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+} from 'mobx';
 
 const LIMIT = 10;
 
-const mockedWorkflows: MasterClass[] = [
-  {
-    id: 1,
-    title: 'Dance Class',
-    eventDate: '2023-04-20',
-    description: 'asdasdhlerkjwegr hweh rweghr kjweb rjkwer kjbwe kjrwe ',
-    photoLink:
-      'https://www.zelda.com/links-awakening/assets/img/home/hero-char.png',
-    videoLink:
-      'https://www.zelda.com/links-awakening/assets/img/home/hero-char.png',
-    creator: {
-      id: 1,
-      name: 'Kristina',
-      role: 'choreoghraph',
-      lastName: '321',
-      photoLink:
-        'https://www.zelda.com/links-awakening/assets/img/home/hero-char.png',
-    },
-    price: 20,
-    danceStyles: [
-      {
-        id: 1,
-        style: 'style1',
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Dance Class 2',
-    eventDate: '2023-04-21',
-    description: 'djfjkdghfkjsdfndsjkfbslnfjs',
-    photoLink:
-      'https://www.zelda.com/links-awakening/assets/img/home/hero-char.png',
-    videoLink:
-      'https://www.zelda.com/links-awakening/assets/img/home/hero-char.png',
-    price: 20,
-    creator: {
-      id: 1,
-      name: 'Kristina',
-      lastName: '321',
-      role: 'choreoghraph',
-      photoLink:
-        'https://www.zelda.com/links-awakening/assets/img/home/hero-char.png',
-    },
-    danceStyles: [
-      {
-        id: 1,
-        style: 'style1',
-      },
-    ],
-  },
-];
-
 export class MasterClassStore {
-  masterClasssRegistry = observable.map();
+  masterClasssDescRegistry = observable.map();
   isLoading = false;
   page = 0;
   totalPagesCount = 0;
+  description: Descriptions | null = null;
 
   constructor() {
     makeObservable(this, {
       isLoading: observable,
       page: observable,
       totalPagesCount: observable,
-      masterClasssRegistry: observable,
-      masterClasss: computed,
+      masterClasssDescRegistry: observable,
+      description: observable,
+      descriptions: computed,
       setPage: action,
       loadMasterClasss: action,
-      loadMasterClass: action,
+      loadDescription: action,
       deleteMasterClass: action,
     });
   }
@@ -84,47 +47,99 @@ export class MasterClassStore {
     this.page = page;
   }
 
-  get masterClasss(): MasterClass[] {
+  get descriptions(): Descriptions[] {
     const masterClasses = [];
-    for (let value of this.masterClasssRegistry.values()) {
+    for (let value of this.masterClasssDescRegistry.values()) {
       masterClasses.push(value);
     }
     return masterClasses;
   }
 
-  loadMasterClasss() {
+  async loadMasterClasss(filters: {
+    danceStyleId?: string;
+    trainerId?: string;
+  }) {
     this.isLoading = true;
-    this.masterClasssRegistry.clear();
-    for (let masterClass of mockedWorkflows) {
-      this.masterClasssRegistry.set(masterClass.id, masterClass);
-      this.totalPagesCount = Math.ceil(mockedWorkflows.length / LIMIT);
-    }
-    action(() => {
+    this.masterClasssDescRegistry.clear();
+    const descriptions = await getUpcomingDescriptionsAPI(filters);
+    runInAction(() => {
+      for (let description of descriptions) {
+        this.masterClasssDescRegistry.set(description.id, description);
+        this.totalPagesCount = Math.ceil(descriptions.length / LIMIT);
+      }
       this.isLoading = false;
     });
   }
 
-  getMasterClass(id: number | null): MasterClass | null {
+  getMasterClass(id: number | null): Descriptions | null {
     if (!id) {
       return null;
     }
-    return this.masterClasssRegistry.get(id);
+    return this.masterClasssDescRegistry.get(id);
   }
 
-  loadMasterClass(id: number, { acceptCached = false } = {}) {
+  async loadDescription(id: number, { acceptCached = false } = {}) {
+    this.isLoading = true;
     if (acceptCached) {
       const masterClass = this.getMasterClass(id);
       if (masterClass) return Promise.resolve(masterClass);
     }
-    this.isLoading = true;
-    action(() => {
+    const description = await getDescriptionByIdAPI(id);
+    runInAction(() => {
+      this.description = description;
+      this.isLoading = false;
+    });
+    return description;
+  }
+
+  async signUp(descriptionId: number) {
+    await signUpForClassAPI(descriptionId);
+    const description = await getDescriptionByIdAPI(this.description!.id);
+    runInAction(() => {
+      this.description = description;
       this.isLoading = false;
     });
   }
+
+  async cancelClass(descriptionId: number) {
+    await cancelClassAPI(descriptionId);
+    const description = await getDescriptionByIdAPI(this.description!.id);
+    runInAction(() => {
+      this.description = description;
+      this.isLoading = false;
+    });
+  }
+
   async deleteMasterClass(id: number) {}
 
   async updateMasterClass(masterClass: UpdateMasterClass) {}
-  async createMasterClass(masterClass: CreateMasterClass) {}
+
+  async createMasterClass(
+    masterClass: CreateMasterClass
+  ): Promise<MasterClass> {
+    try {
+      const masterClassResp = await createMasterClassAPI(masterClass);
+      return masterClassResp;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+  async createMasterClassDescription(
+    masterClassId: number,
+    description: CreateDescription
+  ) {
+    try {
+      const descriptionResp = await createMasterClassDescriptionAPI(
+        masterClassId,
+        description
+      );
+      return descriptionResp;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
 }
 
 export default new MasterClassStore();

@@ -23,7 +23,7 @@
       "@services/*": ["src/services/*"],
       "@utils/*": ["src/utils/*"],
       "@assets/*": ["src/assets/*"],
-    }
+    },
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

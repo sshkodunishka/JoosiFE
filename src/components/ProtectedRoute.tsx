@@ -18,8 +18,7 @@ const ProtectedRoute = ({ children, requiredRole }: Props) => {
       />
     );
   }
-  console.log(user);
-  if (requiredRole && user.role !== requiredRole) {
+  if (requiredRole && user.Roles.role !== requiredRole) {
     return (
       <Navigate
         to='/'

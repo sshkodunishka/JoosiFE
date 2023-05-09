@@ -1,5 +1,13 @@
 import { DanceStyle, getAllDanceStylesAPI } from '@/services/dance-style';
-import { observable, action, reaction, makeObservable } from 'mobx';
+import { User } from '@/services/masterClass';
+import { getAllChoreoghraphsAPI } from '@/services/user-service';
+import {
+  observable,
+  action,
+  reaction,
+  makeObservable,
+  runInAction,
+} from 'mobx';
 
 export class CommonStore {
   appName = 'Joose';
@@ -7,6 +15,7 @@ export class CommonStore {
   refreshToken = window.localStorage.getItem('refreshToken');
   appLoaded = false;
   danceStyles: DanceStyle[] = [];
+  choreographers: User[] = [];
   isLoadingDanceStyles = false;
 
   constructor() {
@@ -45,20 +54,36 @@ export class CommonStore {
     );
   }
 
-  loadDanceStyles() {
-    this.isLoadingDanceStyles = false;
+  async loadDanceStyles() {
+    this.isLoadingDanceStyles = true;
+    try {
+      const danceStyles = await getAllDanceStylesAPI();
+      runInAction(() => {
+        this.danceStyles = danceStyles;
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      runInAction(() => {
+        this.isLoadingDanceStyles = false;
+      });
+    }
+  }
 
-    return getAllDanceStylesAPI()
-      .then(
-        action((danceStyles: DanceStyle[]) => {
-          this.danceStyles = danceStyles;
-        })
-      )
-      .finally(
-        action(() => {
-          this.isLoadingDanceStyles = false;
-        })
-      );
+  async loadDanceTrainers() {
+    this.isLoadingDanceStyles = true;
+    try {
+      const choreographers = await getAllChoreoghraphsAPI();
+      runInAction(() => {
+        this.choreographers = choreographers;
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      runInAction(() => {
+        this.isLoadingDanceStyles = false;
+      });
+    }
   }
 
   setTokens(accessToken: string | null, refreshToken: string | null) {

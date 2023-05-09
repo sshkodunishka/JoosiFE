@@ -7,7 +7,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import {  Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { User } from '@/services/masterClass';
 
 const LoggedOutView = (props: any) => {
@@ -57,7 +57,7 @@ const LoggedInView = (props: { currentUser?: User }) => {
           Home
         </Button>
         {/* Choreographer menu */}
-        {currentUser.role === 'choreographer' && (
+        {currentUser.Roles.role === 'choreographer' && (
           <Button
             color='inherit'
             component={RouterLink}
@@ -67,7 +67,7 @@ const LoggedInView = (props: { currentUser?: User }) => {
           </Button>
         )}
         {/* Admin menu */}
-        {currentUser.role === 'admin' && (
+        {currentUser.Roles.role === 'admin' && (
           <Button
             color='inherit'
             component={RouterLink}
@@ -76,7 +76,7 @@ const LoggedInView = (props: { currentUser?: User }) => {
             Dance Styles
           </Button>
         )}
-        {currentUser.role === 'admin' && (
+        {currentUser.Roles.role === 'admin' && (
           <Button
             color='inherit'
             component={RouterLink}
@@ -86,18 +86,10 @@ const LoggedInView = (props: { currentUser?: User }) => {
           </Button>
         )}
         {/*  */}
-
         <Button
           color='inherit'
           component={RouterLink}
-          to='/settings'>
-          <i className='ion-gear-a' />
-          Profile
-        </Button>
-        <Button
-          color='inherit'
-          component={RouterLink}
-          to={`/@${currentUser.name}`}>
+          to={`/profile/`}>
           <Avatar
             src={currentUser.photoLink}
             alt=''

@@ -1,22 +1,20 @@
-import { authAxiosInstance } from '.';
+import axios from 'axios';
+import { API_URL, authAxiosInstance } from '.';
 import { User } from './masterClass';
 
 export const getCurrentUserAPI = async (): Promise<User> => {
   try {
-    const response = await authAxiosInstance.get('/users');
+    const response = await authAxiosInstance.get('/users/profile');
     const user = {
-      id: 1,
-      name: 'Kristina',
-      lastName: 'Shkoda',
-      login: 'kristina',
-      photoLink: '',
-      role: {
-        id: 1,
-        name: 'admin',
-      },
+      id: response.data.id,
+      name: response.data.name,
+      lastName: response.data.lastName,
+      login: response.data.login,
+      photoLink: response.data.photoLink,
+      Roles: response.data.Roles,
+      roleId: response.data.Roles.id,
     };
-    console.log(user);
-    return { ...user, role: user.role.name };
+    return user;
   } catch (e) {
     console.error(e);
     throw e;
@@ -26,6 +24,7 @@ export const getCurrentUserAPI = async (): Promise<User> => {
 export const getAllUsersAPI = async (): Promise<User[]> => {
   try {
     const response = await authAxiosInstance.get('/users');
+    console.log(response);
     return response.data;
   } catch (e) {
     console.error(e);
@@ -45,5 +44,16 @@ export const changeUserRoleAPI = async (userId: number): Promise<boolean> => {
   } catch (e) {
     console.error(e);
     throw e;
+  }
+};
+
+export const getAllChoreoghraphsAPI = async (): Promise<User[]> => {
+  try {
+    const response = await axios.get(`${API_URL}/users/choreographers`);
+    const users = response.data;
+    return users;
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 };

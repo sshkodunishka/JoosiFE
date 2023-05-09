@@ -1,3 +1,4 @@
+import { DanceStyle } from '@/services/dance-style';
 import { useStore } from '@/store';
 import { Close } from '@mui/icons-material';
 import { Box, IconButton, Input } from '@mui/material';
@@ -12,18 +13,34 @@ const AdminDanceStyles: React.FC = () => {
   }, [danceStyleStore]);
 
   const [danceStyleInput, setDanceStyle] = useState<string>('');
+  const [selectedDanceStyle, setSelectedDanceStyle] = useState<DanceStyle>();
 
-  const changeDanceStyleInput = (e: any) => setDanceStyle(e.target.value);
-  const handleAddDanceStyle = () => {
-    if (danceStyleInput) {
-      danceStyleStore.addDanceStyle(danceStyleInput.trim());
-      setDanceStyle('');
-    }
+  const handleSelectDanceStyle = (danceStyle: DanceStyle) => {
+    setSelectedDanceStyle(danceStyle);
+    setDanceStyle(danceStyle.style);
   };
 
-  const handleRemoveDanceStyle = (danceStyle: string) => {
+  const changeDanceStyleInput = (e: any) => setDanceStyle(e.target.value);
+  const handleSaveDanceStyle = () => {
+    if (danceStyleInput === '' || danceStyleInput.trim() === '') return;
+    if (selectedDanceStyle) {
+      danceStyleStore.updateDanceStyle(
+        selectedDanceStyle.id,
+        danceStyleInput.trim()
+      );
+    } else if (danceStyleInput) {
+      danceStyleStore.addDanceStyle(danceStyleInput.trim());
+    }
+    setDanceStyle('');
+    setSelectedDanceStyle(undefined);
+  };
+
+  const handleRemoveDanceStyle = (ev: any, id: number) => {
+    ev.stopPropagation();
     if (danceStyleStore.inProgress) return;
-    danceStyleStore.removeDanceStyle(danceStyle);
+    danceStyleStore.removeDanceStyle(id);
+    setSelectedDanceStyle(undefined);
+    setDanceStyle('');
   };
 
   const handleDanceStyleInputKeyDown = (ev: any) => {
@@ -32,7 +49,7 @@ const AdminDanceStyles: React.FC = () => {
       case 9: // Tab
       case 188: // ,
         if (ev.keyCode !== 9) ev.preventDefault();
-        handleAddDanceStyle();
+        handleSaveDanceStyle();
         break;
       default:
         break;
@@ -61,7 +78,7 @@ const AdminDanceStyles: React.FC = () => {
               placeholder='Enter danceStyles'
               value={danceStyleInput}
               onChange={changeDanceStyleInput}
-              onBlur={handleAddDanceStyle}
+              onBlur={handleSaveDanceStyle}
               onKeyDown={handleDanceStyleInputKeyDown}
               disabled={inProgress}
             />
@@ -71,6 +88,7 @@ const AdminDanceStyles: React.FC = () => {
                 return (
                   <Box
                     key={danceStyle.id}
+                    onClick={() => handleSelectDanceStyle(danceStyle)}
                     sx={{
                       backgroundColor: '#f0f0f0',
                       borderRadius: '20px',
@@ -78,11 +96,12 @@ const AdminDanceStyles: React.FC = () => {
                       alignItems: 'center',
                       padding: '4px 8px',
                       margin: '0 8px 8px 0',
+                      cursor: 'pointer',
                     }}>
                     <IconButton
                       size='small'
                       sx={{ ml: 1, mr: 0.5 }}
-                      onClick={() => handleRemoveDanceStyle(danceStyle.style)}>
+                      onClick={(e) => handleRemoveDanceStyle(e, danceStyle.id)}>
                       <Close fontSize='small' />
                     </IconButton>
                     {danceStyle.style}

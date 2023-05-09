@@ -54,8 +54,8 @@ const AdminUsers: React.FC = () => {
                       }}>
                       <TableCell>{user.name}</TableCell>
                       <TableCell>{user.lastName}</TableCell>
-                      <TableCell>{user.role}</TableCell>
-                      <TableCell align='right'>{user.role}</TableCell>
+                      <TableCell>{user.roleId}</TableCell>
+                      <TableCell align='right'>{user.roleId}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

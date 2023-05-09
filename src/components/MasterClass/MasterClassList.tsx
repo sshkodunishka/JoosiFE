@@ -2,10 +2,10 @@ import MasterClassPreview from '@components/MasterClass/MasterClassPreview';
 import ListPagination from '@components/ListPagination';
 import React from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
-import { MasterClass } from '@/services/masterClass';
+import { Descriptions } from '@/services/masterClass';
 
 type Props = {
-  masterClasss: MasterClass[];
+  descriptions: Descriptions[];
   loading: boolean;
   totalPagesCount: number;
   currentPage: number;
@@ -13,11 +13,11 @@ type Props = {
 };
 
 const MasterClassList: React.FC<Props> = (props) => {
-  if (props.loading && props.masterClasss.length === 0) {
+  if (props.loading && props.descriptions.length === 0) {
     return <CircularProgress />;
   }
 
-  if (props.masterClasss.length === 0) {
+  if (props.descriptions.length === 0) {
     return (
       <Box sx={{ py: 3 }}>
         <Typography>No masterClasss are here... yet.</Typography>
@@ -26,11 +26,11 @@ const MasterClassList: React.FC<Props> = (props) => {
   }
   return (
     <Box>
-      {props.masterClasss.map((masterClass) => {
+      {props.descriptions.map((description) => {
         return (
           <MasterClassPreview
-            masterClass={masterClass}
-            key={masterClass.id}
+            description={description}
+            key={description.id}
           />
         );
       })}

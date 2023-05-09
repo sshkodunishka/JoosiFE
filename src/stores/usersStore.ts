@@ -3,7 +3,7 @@ import { changeUserRoleAPI, getAllUsersAPI } from '@/services/user-service';
 import { action, makeObservable, observable } from 'mobx';
 
 export class UsersStore {
-  users: User[] = [];
+  users: Omit<User, 'Roles'>[] = [];
   inProgress = false;
   errors = undefined;
 

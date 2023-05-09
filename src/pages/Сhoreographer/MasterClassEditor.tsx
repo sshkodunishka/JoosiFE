@@ -9,22 +9,28 @@ import {
   Container,
   Box,
   Typography,
-  Input,
-  IconButton,
   Stack,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import Close from '@mui/icons-material/Close';
+import { CreateDescription, Descriptions } from '@/services/masterClass';
+import MasterClassDescriptionEditor from '@components/MasterClass/Editor/Description/MasterClassDescriptionEditor';
+import MasterClassDescription from '@components/MasterClass/Editor/Description/MasterClassDescription';
+import DanceStyleSelect from '@components/MasterClass/Editor/DanceStyleSelect';
+import UploadSection from '@components/MasterClass/Editor/UploadSection';
 
 const Editor: React.FC = () => {
   const { id } = useParams();
 
-  const [danceStyleInput, setDanceStyle] = useState<string>('');
+  const [addNewDetail, setAddNewDetail] = useState<boolean>(false);
+  const [selectedDescription, setSelectedDescription] = useState<
+    Descriptions | CreateDescription
+  >();
 
-  const { editorStore } = useStore();
+  const { editorStore, commonStore } = useStore();
   const navigate = useNavigate();
 
   useEffect(() => {
+    commonStore.loadDanceStyles();
     if (id) {
       editorStore.setMasterClassId(+id);
       editorStore.loadInitialData();
@@ -35,48 +41,43 @@ const Editor: React.FC = () => {
   const changeDescription = (e: any) =>
     editorStore.setDescription(e.target.value);
 
-  const changePrice = (e: any) => {
-    console.log('changePrice');
-    console.log(+e.target.value);
-    editorStore.setPrice(+e.target.value);
-  };
-  const changeEventDate = (e: any) => editorStore.setEventData(e.target.value);
-  const changePhotoLink = (e: any) => editorStore.setPhotoLink(e.target.value);
-  const changeVideoLink = (e: any) => editorStore.setVideoLink(e.target.value);
-
-  const changeDanceStyleInput = (e: any) => setDanceStyle(e.target.value);
-
-  const handleDanceStyleInputKeyDown = (ev: any) => {
-    switch (ev.keyCode) {
-      case 13: // Enter
-      case 9: // Tab
-      case 188: // ,
-        if (ev.keyCode !== 9) ev.preventDefault();
-        handleAddDanceStyle();
-        break;
-      default:
-        break;
-    }
+  const handleSaveMasterClassDescription = (
+    description: CreateDescription | Descriptions
+  ) => {
+    editorStore.saveDescription(description);
+    setAddNewDetail(false);
+    setSelectedDescription(undefined);
   };
 
-  const handleAddDanceStyle = () => {
-    if (danceStyleInput) {
-      editorStore.addDanceStyle(danceStyleInput.trim());
-      setDanceStyle('');
-    }
+  const handleDeleteMasterClassDescription = (
+    description: CreateDescription | Descriptions
+  ) => {
+    editorStore.deleteDescription(description);
   };
 
-  const handleRemoveDanceStyle = (danceStyle: string) => {
-    if (editorStore.inProgress) return;
-    editorStore.removeDanceStyle(danceStyle);
-  };
-
-  const submitForm = (ev: FormEvent<HTMLFormElement>) => {
+  const submitForm = (ev: any) => {
     ev.preventDefault();
     editorStore.submit().then((masterClass: any) => {
-      editorStore.reset();
       navigate(`/master-class/${masterClass.id}`);
     });
+  };
+
+  const handleImageUpload = (event: any) => {
+    const file = event.target.files[0];
+    editorStore.uploadFile(file, true);
+  };
+
+  const handleVideoUpload = (event: any) => {
+    const file = event.target.files[0];
+    editorStore.uploadFile(file, false);
+  };
+
+  const isValid = () => {
+    return (
+      editorStore.masterClassesDescriptions.length > 0 &&
+      editorStore.title.length > 0 &&
+      editorStore.description.length > 0
+    );
   };
 
   return (
@@ -84,14 +85,14 @@ const Editor: React.FC = () => {
       {() => {
         const {
           inProgress,
+          uploadInProgress,
           errors,
           title,
           description,
-          price,
-          eventDate,
           photoLink,
           videoLink,
-          danceStyles,
+          masterClassesDescriptions,
+          danceStyles, // don't delete this line
         } = editorStore;
 
         return (
@@ -116,88 +117,108 @@ const Editor: React.FC = () => {
                   <Typography variant='h4'>Create a master class</Typography>
                 </Box>
 
-                <Stack direction='row'>
-                  <TextField
-                    variant='filled'
-                    label='Title'
-                    value={title}
-                    onChange={changeTitle}
-                    disabled={inProgress}
-                    sx={{ mb: 2, mr: 5 }}
-                  />
-                  <TextField
-                    type='datetime-local'
-                    value={eventDate}
-                    onChange={changeEventDate}
-                    disabled={inProgress}
-                    sx={{ mb: 2, mr: 2 }}
-                  />
+                <Stack
+                  direction='row'
+                  width='100%'
+                  sx={{ justifyContent: 'space-between' }}>
+                  <Stack
+                    sx={{
+                      width: '50%',
+                      flexBasis: '0.5',
+                    }}>
+                    <TextField
+                      variant='filled'
+                      label='Title'
+                      value={title}
+                      required
+                      onChange={changeTitle}
+                      disabled={inProgress}
+                      minRows={1}
+                      sx={{ mb: 2 }}
+                    />
+                    <TextField
+                      fullWidth
+                      variant='filled'
+                      label="What's this Master Class about?"
+                      value={description}
+                      required
+                      onChange={changeDescription}
+                      disabled={inProgress}
+                      multiline
+                      minRows={2}
+                      sx={{ mb: 2 }}
+                    />
+                  </Stack>
+                  <DanceStyleSelect allDanceStyles={commonStore.danceStyles} />
                 </Stack>
 
-                <TextField
-                  fullWidth
-                  variant='filled'
-                  label="What's this masterClass about?"
-                  value={description}
-                  onChange={changeDescription}
-                  disabled={inProgress}
-                  sx={{ mb: 2 }}
+                <UploadSection
+                  handleImageUpload={handleImageUpload}
+                  handleVideoUpload={handleVideoUpload}
+                  photoLink={photoLink}
+                  videoLink={videoLink}
+                  uploadInProgress={uploadInProgress}
                 />
 
-                <Input
-                  sx={{ mb: 2, mr: 2 }}
-                  placeholder='Price'
-                  type='number'
-                  value={price.toString()}
-                  onChange={changePrice}
-                  onBlur={changePrice}
-                  onKeyDown={changePrice}
-                  disabled={inProgress}
-                />
-
-                <Input
-                  sx={{ mb: 2 }}
-                  placeholder='Enter danceStyles'
-                  value={danceStyleInput}
-                  onChange={changeDanceStyleInput}
-                  onBlur={handleAddDanceStyle}
-                  onKeyDown={handleDanceStyleInputKeyDown}
-                  disabled={inProgress}
-                />
-
-                <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                  {danceStyles?.map((danceStyle) => {
-                    return (
-                      <Box
-                        key={danceStyle.id}
-                        sx={{
-                          backgroundColor: '#f0f0f0',
-                          borderRadius: '20px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          padding: '4px 8px',
-                          margin: '0 8px 8px 0',
-                        }}>
-                        <IconButton
-                          size='small'
-                          sx={{ ml: 1, mr: 0.5 }}
-                          onClick={() =>
-                            handleRemoveDanceStyle(danceStyle.style)
-                          }>
-                          <Close fontSize='small' />
-                        </IconButton>
-                        {danceStyle.style}
-                      </Box>
-                    );
-                  })}
+                {/* Details  */}
+                <Box>
+                  <Typography variant='h3'>Details:</Typography>
+                  {!addNewDetail ? (
+                    <Box>
+                      {masterClassesDescriptions.map(
+                        (description: Descriptions | CreateDescription) => {
+                          return (
+                            <Box
+                              key={
+                                (description as Descriptions).id ||
+                                (description as CreateDescription).tempId
+                              }
+                              sx={{ mb: 1 }}>
+                              <MasterClassDescription
+                                description={description}
+                                onDelete={handleDeleteMasterClassDescription}
+                                onUpdate={(description) => {
+                                  setSelectedDescription(description);
+                                  setAddNewDetail(true);
+                                }}
+                              />
+                            </Box>
+                          );
+                        }
+                      )}
+                    </Box>
+                  ) : (
+                    <MasterClassDescriptionEditor
+                      description={selectedDescription}
+                      onCancel={() => {
+                        setAddNewDetail(false);
+                        setSelectedDescription(undefined);
+                      }}
+                      onSaveMasterClass={handleSaveMasterClassDescription}
+                    />
+                  )}
+                  <Stack
+                    sx={{ visibility: addNewDetail ? 'hidden' : 'visible' }}
+                    width='30%'>
+                    <Button
+                      type='submit'
+                      variant='contained'
+                      onClick={() => {
+                        setAddNewDetail(true);
+                        setSelectedDescription(undefined);
+                      }}
+                      hidden={addNewDetail}>
+                      Add new detail
+                    </Button>
+                    <Button
+                      variant='contained'
+                      onClick={(e) => submitForm(e)}
+                      disabled={inProgress || !isValid()}
+                      sx={{ mt: 2 }}>
+                      Create Master Class
+                    </Button>
+                  </Stack>
                 </Box>
-                <Button
-                  type='submit'
-                  variant='contained'
-                  disabled={inProgress}
-                  sx={{ mt: 2 }}>
-                  Create Master Class
-                </Button>
               </Box>
             </Container>
           </Box>

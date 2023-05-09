@@ -1,4 +1,4 @@
-import { observable, action, makeObservable } from 'mobx';
+import { observable, action, makeObservable, runInAction } from 'mobx';
 import userStore from './userStore';
 import commonStore from './commonStore';
 import { loginAPI, registerAPI } from '@/services/auth-service';
@@ -57,59 +57,59 @@ export class AuthStore {
     this.values.login = '';
     this.values.password = '';
   }
-
-  login() {
+  async login() {
     this.inProgress = true;
     this.errors = undefined;
-    return loginAPI(this.values.login, this.values.password)
-      .then((tokens: Tokens) =>
-        commonStore.setTokens(tokens.acsess_token, tokens.refresh_token)
-      )
-      .then(() => userStore.pullUser())
-      .catch(
-        action((err: any) => {
-          this.errors =
-            err.response && err.response.body && err.response.body.errors;
-          throw err;
-        })
-      )
-      .finally(
-        action(() => {
-          this.inProgress = false;
-        })
-      );
+    try {
+      const tokens = await loginAPI(this.values.login, this.values.password);
+      runInAction(() => {
+        commonStore.setTokens(tokens.acsess_token, tokens.refresh_token);
+      });
+      await userStore.pullUser();
+    } catch (err: any) {
+      runInAction(() => {
+        this.errors = err.message;
+        throw err;
+      });
+    } finally {
+      runInAction(() => {
+        this.inProgress = false;
+      });
+    }
   }
 
-  register() {
+  async register() {
     this.inProgress = true;
     this.errors = undefined;
-    return registerAPI(
-      this.values.name,
-      this.values.lastName,
-      this.values.login,
-      this.values.password
-    )
-      .then((tokens: Tokens) =>
-        commonStore.setTokens(tokens.acsess_token, tokens.refresh_token)
-      )
-      .then(() => userStore.pullUser())
-      .catch(
-        action((err: any) => {
-          this.errors =
-            err.response && err.response.body && err.response.body.errors;
-          throw err;
-        })
-      )
-      .finally(
-        action(() => {
-          this.inProgress = false;
-        })
+
+    try {
+      const tokens = await registerAPI(
+        this.values.name,
+        this.values.lastName,
+        this.values.login,
+        this.values.password
       );
+
+      runInAction(() => {
+        commonStore.setTokens(tokens.acsess_token, tokens.refresh_token);
+      });
+
+      await userStore.pullUser();
+    } catch (err: any) {
+      runInAction(() => {
+        this.errors = err.message;
+      });
+      throw err;
+    } finally {
+      runInAction(() => {
+        this.inProgress = false;
+      });
+    }
   }
 
   logout() {
     commonStore.setTokens(null, null);
-    userStore.forgetUser();
+    userStore.signOut();
     return Promise.resolve();
   }
 }

@@ -7,76 +7,130 @@ import {
   CardHeader,
   CardMedia,
   Typography,
-  Link,
+  Stack,
+  Box,
 } from '@mui/material';
-import { MasterClass } from '@/services/masterClass';
+import { Descriptions, MasterClass } from '@/services/masterClass';
+import { useNavigate, Link } from 'react-router-dom';
+import DateComponent from '@components/Date';
+import { EmptyImageLink } from '../../services/constants';
 
 type Props = {
-  masterClass: MasterClass;
+  description: Descriptions;
 };
 
 const MasterClassPreview: React.FC<Props> = (props) => {
+  const navigate = useNavigate();
   return (
     <Observer>
       {() => {
-        const { masterClass } = props;
-
+        const { description } = props;
         return (
-          <Card sx={{ mb: 2 }}>
+          <Card sx={{ mb: 2, minHeight: '350px', maxHeight: '800px' }}>
             <CardHeader
+              sx={{ backgroundColor: '#f5f5f5' }}
               avatar={
-                <Link
-                  underline='none'
-                  href={`#/@${masterClass.creator.id}`}>
+                <Link to={`users/${description.MasterClasses.Users.id}`}>
                   <Avatar
                     sx={{ width: 50, height: 50 }}
-                    src={masterClass.creator.photoLink}
+                    src={description.MasterClasses.Users.photoLink}
                     alt=''
                   />
                 </Link>
               }
               title={
-                <Link
-                  underline='none'
-                  href={`#/user/${masterClass.creator.id}`}>
-                  {masterClass.creator.name}
-                </Link>
+                <Stack
+                  sx={{
+                    fontSize: '14px',
+                    justifyContent: 'space-between',
+                  }}
+                  width='100%'
+                  direction='row'>
+                  <Link to={`users/${description.MasterClasses.Users.id}`}>
+                    {description.MasterClasses.Users.name}{' '}
+                    {description.MasterClasses.Users.lastName}
+                  </Link>
+                  <DateComponent
+                    sx={{ alignItems: 'flex-end' }}
+                    eventDate={description.eventDate}
+                  />
+                </Stack>
               }
-              subheader={new Date(masterClass.eventDate).toDateString()}
             />
 
-            {masterClass.photoLink && (
+            <CardContent
+              sx={{
+                display: 'flex',
+                width: '100%',
+                height: '100%',
+                justifyContent: 'space-between',
+              }}>
               <CardMedia
                 component='img'
                 height='250'
-                image={masterClass.photoLink}
+                image={description.MasterClasses.imageLink || EmptyImageLink}
                 alt={'masterClass image'}
-                sx={{ padding: '1em 1em 0 1em', objectFit: 'contain' }}
+                sx={{
+                  padding: '1em 1em 0 1em',
+                  objectFit: 'contain',
+                  cursor: 'pointer',
+                }}
+                onClick={() => navigate(`master-classes/${description.id}`)}
               />
-            )}
-
-            <CardContent>
-              <Link
-                href={`#/master-classes/${masterClass.id}`}
+              <Stack
+                sx={{ ml: 2, width: '100%', height: '100%' }}
                 className='preview-link'>
-                <Typography
-                  variant='h5'
-                  component='h2'
-                  sx={{ mb: 1 }}>
-                  {masterClass.title}
-                </Typography>
+                <Link to={`master-classes/${description.id}`}>
+                  <Typography
+                    variant='h5'
+                    component='h2'
+                    sx={{ mb: 1 }}>
+                    {description.MasterClasses.title}
+                  </Typography>
+                </Link>
+
+                <Stack
+                  sx={{ mb: 1 }}
+                  direction='row'>
+                  <Typography
+                    component='h2'
+                    sx={{ mr: 1 }}>
+                    Place:
+                  </Typography>
+                  <Typography component='h2'>{description.place}</Typography>
+                </Stack>
+
+                <Stack
+                  sx={{ mb: 1 }}
+                  direction='row'>
+                  <Typography
+                    component='h2'
+                    sx={{ mr: 1 }}>
+                    People:
+                  </Typography>
+                  <Typography component='h2'>
+                    {description.countOfPeople}
+                  </Typography>
+                </Stack>
+                <Stack
+                  sx={{ mb: 1 }}
+                  direction='row'>
+                  <Typography
+                    component='h2'
+                    sx={{ mr: 1 }}>
+                    Price:
+                  </Typography>
+                  <Typography component='h2'>
+                    {description.price == 0 ? 'Free' : description.price}
+                  </Typography>
+                </Stack>
+
                 <Typography
                   variant='body1'
-                  color='text.secondary'
                   sx={{ mb: 1 }}>
-                  {masterClass.description}
+                  {description.MasterClasses.description}
                 </Typography>
-                <Typography
-                  variant='body1'
-                  color='text.secondary'>
-                  Learn more...
-                </Typography>
-              </Link>
+              </Stack>
             </CardContent>
           </Card>
         );

@@ -12,6 +12,11 @@ body {
   height: 100%;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 #root {
   height: 100%;
 }
