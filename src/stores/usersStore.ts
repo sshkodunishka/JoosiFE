@@ -1,9 +1,9 @@
 import { User } from '@/services/masterClass';
 import { changeUserRoleAPI, getAllUsersAPI } from '@/services/user-service';
-import { action, makeObservable, observable } from 'mobx';
+import { action, makeObservable, observable, runInAction } from 'mobx';
 
 export class UsersStore {
-  users: Omit<User, 'Roles'>[] = [];
+  users: User[] = [];
   inProgress = false;
   errors = undefined;
 
@@ -16,37 +16,34 @@ export class UsersStore {
     });
   }
 
-  loadInitialData() {
+  async loadInitialData() {
     this.inProgress = true;
-    return getAllUsersAPI()
-      .then(
-        action((users: User[]) => {
-          this.users = users;
-        })
-      )
-      .finally(
-        action(() => {
-          this.inProgress = false;
-        })
-      );
+    try {
+      const users = await getAllUsersAPI();
+      runInAction(() => {
+        this.users = users;
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      runInAction(() => {
+        this.inProgress = false;
+      });
+    }
   }
 
   async changeUserRole(userId: number) {
     this.inProgress = true;
     try {
       await changeUserRoleAPI(userId);
-      action(() => {
-        this.users = this.users.map((user) => {
-          return user.id === userId ? { ...user, role: 'choreographer' } : user;
-        });
-      });
+      await this.loadInitialData();
     } catch (e) {
     } finally {
-      action(() => {
+      runInAction(() => {
         this.inProgress = false;
       });
     }
   }
 }
 
-export default new UsersStore()
+export default new UsersStore();

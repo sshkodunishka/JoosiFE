@@ -10,6 +10,7 @@ import {
   getUpcomingDescriptionsAPI,
   cancelClassAPI,
   signUpForClassAPI,
+  getUserDescriptionsAPI,
 } from '@/services/masterClass';
 import {
   action,
@@ -58,10 +59,20 @@ export class MasterClassStore {
   async loadMasterClasss(filters: {
     danceStyleId?: string;
     trainerId?: string;
+    isUserRequest?: boolean;
+    isChoreographerRequest?: boolean;
   }) {
     this.isLoading = true;
+    let descriptions: Descriptions[] = [];
+
     this.masterClasssDescRegistry.clear();
-    const descriptions = await getUpcomingDescriptionsAPI(filters);
+    if (filters.isUserRequest) {
+      descriptions = await getUserDescriptionsAPI('user');
+    } else if (filters.isChoreographerRequest) {
+      descriptions = await getUserDescriptionsAPI('choreographer');
+    } else {
+      descriptions = await getUpcomingDescriptionsAPI(filters);
+    }
     runInAction(() => {
       for (let description of descriptions) {
         this.masterClasssDescRegistry.set(description.id, description);

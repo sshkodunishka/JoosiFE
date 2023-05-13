@@ -1,6 +1,11 @@
 import axios from 'axios';
 import { API_URL, authAxiosInstance } from '.';
-import { User } from './masterClass';
+import { User, MasterClass } from './masterClass';
+
+export interface Choreographers extends User {
+  MasterClasses: MasterClass[];
+  description: string;
+}
 
 export const getCurrentUserAPI = async (): Promise<User> => {
   try {
@@ -24,7 +29,6 @@ export const getCurrentUserAPI = async (): Promise<User> => {
 export const getAllUsersAPI = async (): Promise<User[]> => {
   try {
     const response = await authAxiosInstance.get('/users');
-    console.log(response);
     return response.data;
   } catch (e) {
     console.error(e);
@@ -40,14 +44,14 @@ export const changeUserRoleAPI = async (userId: number): Promise<boolean> => {
         id: userId,
       }
     );
-    return true;
+    return response.data;
   } catch (e) {
     console.error(e);
     throw e;
   }
 };
 
-export const getAllChoreoghraphsAPI = async (): Promise<User[]> => {
+export const getAllChoreoghraphsAPI = async (): Promise<Choreographers[]> => {
   try {
     const response = await axios.get(`${API_URL}/users/choreographers`);
     const users = response.data;
@@ -55,5 +59,18 @@ export const getAllChoreoghraphsAPI = async (): Promise<User[]> => {
   } catch (error) {
     console.log(error);
     throw error;
+  }
+};
+
+export const getOneChoreoghrapherAPI = async (
+  id: number
+): Promise<Choreographers> => {
+  try {
+    const response = await axios.get(`${API_URL}/users/choreographers/${id}`);
+    const users = response.data;
+    return users;
+  } catch (error: any) {
+    console.log(error);
+    throw error.response.data.message;
   }
 };

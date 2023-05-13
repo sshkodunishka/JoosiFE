@@ -53,6 +53,7 @@ const Login = (props: any) => {
                   variant='body1'
                   align='center'>
                   <Link
+                    color={'primary'}
                     component={RouterLink}
                     to='/register'>
                     Need an account?

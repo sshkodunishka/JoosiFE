@@ -16,7 +16,6 @@ export class UserStore {
       updatingUser: observable,
       updatingUserErrors: observable,
       pullUser: action,
-      updateUser: action,
       signOut: action,
     });
   }
@@ -30,19 +29,22 @@ export class UserStore {
     });
   }
 
-  updateUser(newUser: User) {
+  async updateUser(newUser: User) {
     this.updatingUser = true;
-    return agent.Auth.save(newUser)
-      .then(
-        action(({ user }: { user: User }) => {
-          this.currentUser = user;
-        })
-      )
-      .finally(
-        action(() => {
-          this.updatingUser = false;
-        })
-      );
+    try {
+      const user = await agent.User.update(newUser);
+      runInAction(() => {
+        this.currentUser = user;
+      });
+    } catch (error: any) {
+      runInAction(() => {
+        this.updatingUserErrors = error.data.errors;
+      });
+    } finally {
+      runInAction(() => {
+        this.updatingUser = false;
+      });
+    }
   }
 
   signOut() {

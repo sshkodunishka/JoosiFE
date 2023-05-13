@@ -9,6 +9,7 @@ import {
   Typography,
   Stack,
   Box,
+  Chip,
 } from '@mui/material';
 import { Descriptions, MasterClass } from '@/services/masterClass';
 import { useNavigate, Link } from 'react-router-dom';
@@ -128,8 +129,21 @@ const MasterClassPreview: React.FC<Props> = (props) => {
                 <Typography
                   variant='body1'
                   sx={{ mb: 1 }}>
-                  {description.MasterClasses.description}
+                  {description.MasterClasses.description.slice(0, 100) + '...'}
                 </Typography>
+
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', mb: 2 }}>
+                  {description.MasterClasses.ClassesStyles.map((danceStyle) => {
+                    return (
+                      <Chip
+                        key={danceStyle.style.id}
+                        label={danceStyle.style.style}
+                        sx={{ mr: 1, mb: 1 }}
+                        variant='outlined'
+                      />
+                    );
+                  })}
+                </Box>
               </Stack>
             </CardContent>
           </Card>

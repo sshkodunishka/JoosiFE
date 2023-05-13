@@ -10,7 +10,7 @@ export interface Tokens {
 
 export class AuthStore {
   inProgress = false;
-  errors = undefined;
+  errors: any = undefined;
 
   values = {
     name: '',
@@ -68,7 +68,7 @@ export class AuthStore {
       await userStore.pullUser();
     } catch (err: any) {
       runInAction(() => {
-        this.errors = err.message;
+        this.errors = [err.response.data.message];
         throw err;
       });
     } finally {
@@ -97,7 +97,7 @@ export class AuthStore {
       await userStore.pullUser();
     } catch (err: any) {
       runInAction(() => {
-        this.errors = err.message;
+        this.errors = [err.response.data.message];
       });
       throw err;
     } finally {

@@ -12,7 +12,7 @@ import { DanceStyle } from '@/services/dance-style';
 export class EditorStore {
   inProgress = false;
   uploadInProgress = false;
-  errors = undefined;
+  errors: any = undefined;
   masterClassId: number | null = null;
 
   title = '';
@@ -205,6 +205,7 @@ export class EditorStore {
         description: this.description,
         danceStylesIds: this.danceStyles.map((ds) => ds.id),
         id: this.masterClassId,
+        Descriptions: [],
       };
       const masterClass = await masterClassStore.createMasterClass(
         masterClassDTO
@@ -218,7 +219,7 @@ export class EditorStore {
       }
     } catch (e: any) {
       runInAction(() => {
-        this.errors = e.response && e.response.body && e.response.body.errors;
+        this.errors = [e.response?.data?.message];
         console.log(e);
       });
     } finally {

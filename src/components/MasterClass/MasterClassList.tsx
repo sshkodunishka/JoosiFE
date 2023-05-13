@@ -20,7 +20,7 @@ const MasterClassList: React.FC<Props> = (props) => {
   if (props.descriptions.length === 0) {
     return (
       <Box sx={{ py: 3 }}>
-        <Typography>No masterClasss are here... yet.</Typography>
+        <Typography>No master classes are here... yet.</Typography>
       </Box>
     );
   }

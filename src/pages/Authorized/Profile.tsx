@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Observer } from 'mobx-react-lite';
-import { useTheme } from '@mui/material/styles';
 import {
   Avatar,
   Box,
@@ -10,16 +9,12 @@ import {
   CardContent,
   Divider,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material';
 
 import { useStore } from '../../store';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
+import { User } from '@/services/masterClass';
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -27,15 +22,24 @@ const ProfilePage: React.FC = () => {
   const handleUpdateProfile = () => {
     console.log('handle update profile');
   };
+
+  useEffect(() => {
+    if (userStore.currentUser) {
+      setCurrentUser(userStore.currentUser);
+    }
+  }, [userStore.currentUser]);
+
+  const [user, setCurrentUser] = useState<User | null>(null);
+
   return (
     <Observer>
       {() => {
-        const { currentUser } = userStore;
+        const { updatingUser } = userStore;
         const { logout } = authStore;
         const handleLogOut = () => {
           logout().then(() => navigate('/'));
         };
-        if (!currentUser) return null;
+        if (!user) return null;
 
         return (
           <Box
@@ -83,8 +87,8 @@ const ProfilePage: React.FC = () => {
                     }}>
                     <Avatar
                       sx={{ flexGrow: 0, width: 150, height: 150 }}
-                      alt={currentUser.name}
-                      src={currentUser.photoLink}
+                      alt={user.name}
+                      src={user.photoLink}
                     />
 
                     <Box sx={{ mt: 2, mb: 1 }}>
@@ -102,15 +106,24 @@ const ProfilePage: React.FC = () => {
                     <Stack
                       direction='row'
                       spacing={2}>
-                      <Box sx={{ typography: 'body1' }}>Name:</Box>
-                      <Box sx={{ typography: 'body1' }}>{currentUser.name}</Box>
+                      <TextField
+                        sx={{ mb: 2, mr: 2 }}
+                        placeholder='Count of people'
+                        type='string'
+                        label='Name'
+                        value={user.name}
+                        onChange={() =>
+                          setCurrentUser({ ...user, name: user.name })
+                        }
+                        required={updatingUser}
+                      />
                     </Stack>
                     <Stack
                       direction='row'
                       spacing={2}>
                       <Box sx={{ typography: 'body1' }}>Last Name:</Box>
                       <Box sx={{ typography: 'body1' }}>
-                        {currentUser.lastName}
+                        {user.lastName}
                       </Box>
                     </Stack>
                     <Box sx={{ mt: 2 }}>

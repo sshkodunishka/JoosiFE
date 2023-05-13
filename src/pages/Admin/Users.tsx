@@ -1,6 +1,7 @@
 import { useStore } from '@/store';
 import {
   Box,
+  Button,
   CircularProgress,
   Paper,
   Table,
@@ -17,6 +18,9 @@ const AdminUsers: React.FC = () => {
   const { usersStore } = useStore();
 
   useEffect(() => {
+    if (usersStore.inProgress) {
+      return;
+    }
     usersStore.loadInitialData();
   }, [usersStore]);
   return (
@@ -46,18 +50,33 @@ const AdminUsers: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {users.map((user) => (
-                    <TableRow
-                      key={user.id}
-                      sx={{
-                        '&:last-child td, &:last-child th': { border: 0 },
-                      }}>
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.lastName}</TableCell>
-                      <TableCell>{user.roleId}</TableCell>
-                      <TableCell align='right'>{user.roleId}</TableCell>
-                    </TableRow>
-                  ))}
+                  {users.map((user) => {
+                    if (user.Roles.role !== 'admin')
+                      return (
+                        <TableRow
+                          key={user.id}
+                          sx={{
+                            '&:last-child td, &:last-child th': { border: 0 },
+                          }}>
+                          <TableCell>{user.name}</TableCell>
+                          <TableCell>{user.lastName}</TableCell>
+                          <TableCell>{user.roleId}</TableCell>
+                          <TableCell>{user.Roles.role}</TableCell>
+                          <TableCell align='right'>
+                            {user.Roles.role === 'user' && (
+                              <Box>
+                                <Button
+                                  onClick={() => {
+                                    usersStore.changeUserRole(user.id);
+                                  }}>
+                                  Make a choreographer
+                                </Button>
+                              </Box>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                  })}
                 </TableBody>
               </Table>
             </TableContainer>

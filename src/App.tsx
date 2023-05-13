@@ -14,16 +14,25 @@ import AdminDanceStyles from '@pages/Admin/DanceStyles';
 import AdminUsers from '@pages/Admin/Users';
 import { Observer } from 'mobx-react-lite';
 import ProfilePage from '@pages/Authorized/Profile';
+import ChoreographersPage from '@pages/ChoreographersPage';
+import ChoreographerPage from '@pages/ChoreographerPage';
+import ChatPage from '@pages/Authorized/Chat';
 
 const App: React.FC = () => {
-  const { commonStore, userStore } = useStore();
+  const { commonStore, userStore, chatStore } = useStore();
+
   useEffect(() => {
     if (commonStore.accessToken) {
-      userStore.pullUser().finally(() => commonStore.setAppLoaded());
+      if (userStore.loadingUser) {
+        return;
+      }
+      userStore.pullUser().finally(() => {
+        commonStore.setAppLoaded();
+      });
     } else {
       commonStore.setAppLoaded();
     }
-  }, [commonStore.accessToken, commonStore.appLoaded]);
+  }, [commonStore.accessToken]);
 
   return (
     <Observer>
@@ -66,6 +75,14 @@ const App: React.FC = () => {
                     path='/master-classes/:id'
                     element={<MasterClass />}
                   />
+                  <Route
+                    path='/choreographers/:id'
+                    element={<ChoreographerPage />}
+                  />
+                  <Route
+                    path='/choreographers'
+                    element={<ChoreographersPage />}
+                  />
                   {/* choreographer */}
                   <Route
                     path='/editor/:id?'
@@ -101,12 +118,14 @@ const App: React.FC = () => {
                       </ProtectedRoute>
                     }
                   />
-                  {/* <PrivateRoute path="/settings" component={Settings} />
-        <Route path="/@:username" component={Profile} />
-        <Route path="/@:username/favorites" component={Profile} />
-        <Route path="/article/:slug" component={Article} />
-        <Route path="/editor/:slug?" component={Editor} />
-       */}
+                  <Route
+                    path='/chat/'
+                    element={
+                      <ProtectedRoute>
+                        <ChatPage />
+                      </ProtectedRoute>
+                    }
+                  />
                 </Routes>
                 <Footer />
               </Box>

@@ -26,6 +26,7 @@ export interface MasterClass {
   ClassesStyles: {
     style: DanceStyle;
   }[];
+  Descriptions: Descriptions[];
 }
 
 export interface Descriptions {
@@ -70,6 +71,21 @@ export const getUpcomingDescriptionsAPI = async ({
   try {
     const response = await axios.get(
       `${API_URL}/descriptions?danceStyleId=${danceStyleId}&choreographerId=${trainerId}`
+    );
+    const descriptions = response.data;
+    return descriptions;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getUserDescriptionsAPI = async (
+  role: string
+): Promise<Descriptions[]> => {
+  try {
+    const response = await authAxiosInstance.get(
+      `${API_URL}/descriptions/${role}`
     );
     const descriptions = response.data;
     return descriptions;

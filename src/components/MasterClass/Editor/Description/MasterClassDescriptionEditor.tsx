@@ -80,6 +80,7 @@ const MasterClassDescriptionEditor: React.FC<Props> = (props) => {
       price,
       countOfPeople,
       place,
+      Requests: [],
       tempId:
         (props.description as CreateDescription)?.tempId ||
         Math.random() * 1000,

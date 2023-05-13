@@ -9,6 +9,7 @@ import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import { Typography } from '@mui/material';
 import { User } from '@/services/masterClass';
+import { Choreographers } from '../services/user-service';
 
 const LoggedOutView = (props: any) => {
   const { currentUser } = props;
@@ -23,6 +24,12 @@ const LoggedOutView = (props: any) => {
           component={RouterLink}
           to='/'>
           Home
+        </Button>
+        <Button
+          color='inherit'
+          component={RouterLink}
+          to='/choreographers'>
+          Choreographers
         </Button>
         <Button
           color='inherit'
@@ -56,6 +63,20 @@ const LoggedInView = (props: { currentUser?: User }) => {
           to='/'>
           Home
         </Button>
+        {currentUser && (
+          <Button
+            color='inherit'
+            component={RouterLink}
+            to='/chat'>
+            Chat
+          </Button>
+        )}
+        <Button
+          color='inherit'
+          component={RouterLink}
+          to='/choreographers'>
+          Choreographers
+        </Button>
         {/* Choreographer menu */}
         {currentUser.Roles.role === 'choreographer' && (
           <Button
@@ -85,7 +106,7 @@ const LoggedInView = (props: { currentUser?: User }) => {
             Users
           </Button>
         )}
-        {/*  */}
+        {/* Authorized */}
         <Button
           color='inherit'
           component={RouterLink}

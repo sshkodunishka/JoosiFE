@@ -24,7 +24,7 @@ function LinkTab(props: LinkTabProps) {
 
 const MainView: React.FC = () => {
   const location = useLocation();
-  const { masterClassStore, commonStore } = useStore();
+  const { masterClassStore, commonStore, userStore } = useStore();
 
   let tab: string = (qsParse.parse(location.search).tab as string) || 'all';
   if (Array.isArray(tab)) {
@@ -41,13 +41,24 @@ const MainView: React.FC = () => {
   };
 
   useEffect(() => {
-    masterClassStore.loadMasterClasss({ danceStyleId, trainerId });
+    const isChoreographerRequest = tab === 'my-master-classes';
+    const isUserRequest = tab === 'my-sign-ups';
+    if (masterClassStore.isLoading) {
+      return;
+    }
+    masterClassStore.loadMasterClasss({
+      danceStyleId,
+      trainerId,
+      isUserRequest,
+      isChoreographerRequest,
+    });
   }, [masterClassStore, tab, danceStyleId, trainerId]);
 
   return (
     <Observer>
       {() => {
         const { danceStyles, choreographers } = commonStore;
+        const { currentUser } = userStore;
         const { descriptions, isLoading, page, totalPagesCount } =
           masterClassStore;
         return (
@@ -59,11 +70,20 @@ const MainView: React.FC = () => {
                   href='/#/'
                   value='all'
                 />
-                <LinkTab
-                  label='My MasterClasss'
-                  href='/#/?tab=my-master-classes'
-                  value='my-master-classes'
-                />
+                {currentUser && (
+                  <LinkTab
+                    label='My Sign-ups'
+                    href='/#/?tab=my-sign-ups'
+                    value='my-sign-ups'
+                  />
+                )}
+                {currentUser?.Roles.role === 'choreographer' && (
+                  <LinkTab
+                    label='My Creations'
+                    href='/#/?tab=my-master-classes'
+                    value='my-master-classes'
+                  />
+                )}
                 {danceStyleId && (
                   <LinkTab
                     label={`#${

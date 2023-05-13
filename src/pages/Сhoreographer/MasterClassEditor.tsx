@@ -30,7 +30,13 @@ const Editor: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (commonStore.isLoadingDanceStyles) {
+      return;
+    }
     commonStore.loadDanceStyles();
+    if (editorStore.inProgress) {
+      return;
+    }
     if (id) {
       editorStore.setMasterClassId(+id);
       editorStore.loadInitialData();

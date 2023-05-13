@@ -63,6 +63,7 @@ const Register: React.FC = (props: any) => {
                 color='text.secondary'
                 align='center'>
                 <Link
+                  color={'primary'}
                   component={RouterLink}
                   to='/login'>
                   Have an account?

@@ -192,7 +192,7 @@ const MasterClass: React.FC = () => {
                       component='img'
                       height='450'
                       image={
-                        description.MasterClasses.imageLink ?? EmptyImageLink
+                        description.MasterClasses.imageLink || EmptyImageLink
                       }
                       alt={'masterClass image'}
                       sx={{

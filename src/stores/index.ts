@@ -5,6 +5,10 @@ import masterClassStore, { MasterClassStore } from './masterClassStore';
 import editorStore, { EditorStore } from './editorStore';
 import danceStyleStore, { DanceStyleStore } from './danceStylesStore';
 import usersStore, { UsersStore } from './usersStore';
+import choreographersStore, {
+  ChoreographersStore,
+} from './choreographersStore';
+import chatStore, { ChatStore } from './chatStore';
 
 export type RootStore = {
   userStore: UserStore;
@@ -14,6 +18,8 @@ export type RootStore = {
   editorStore: EditorStore;
   danceStyleStore: DanceStyleStore;
   usersStore: UsersStore;
+  choreographersStore: ChoreographersStore;
+  chatStore: ChatStore;
 };
 
 const rootStore: RootStore = {
@@ -24,6 +30,8 @@ const rootStore: RootStore = {
   editorStore,
   danceStyleStore,
   usersStore,
+  choreographersStore,
+  chatStore,
 };
 
 export default rootStore;

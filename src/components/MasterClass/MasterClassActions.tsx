@@ -34,15 +34,15 @@ const MasterClassActions: React.FC<Props> = (props) => {
       </span>
     );
   }
-  console.log(description.Requests);
   const request = description.Requests?.find(
     (request) => request.userId === props.currentUser!.id
   );
   const canModify =
     props.currentUser.id === description.MasterClasses.creatorId;
   false;
-  const canSignUp = !request;
-  console.log(canSignUp);
+
+  const canSignUp = !request && description.countOfPeople > 0;
+
   if (canModify) {
     return (
       <span>
@@ -81,18 +81,22 @@ const MasterClassActions: React.FC<Props> = (props) => {
       </Box>
     );
   }
-  console.log('here ');
-  return (
-    <Box sx={{ mr: 1 }}>
-      <Button
-        variant='outlined'
-        size='small'
-        onClick={() => props.handleDescribe(description.id)}
-        startIcon={<RequestPage />}>
-        Describe
-      </Button>
-    </Box>
-  );
+
+  if (request) {
+    return (
+      <Box sx={{ mr: 1 }}>
+        <Button
+          variant='outlined'
+          size='small'
+          onClick={() => props.handleDescribe(request.id)}
+          startIcon={<RequestPage />}>
+          Describe
+        </Button>
+      </Box>
+    );
+  }
+
+  return <></>;
 };
 
 export default MasterClassActions;

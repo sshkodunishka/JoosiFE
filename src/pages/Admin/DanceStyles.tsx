@@ -9,6 +9,9 @@ const AdminDanceStyles: React.FC = () => {
   const { danceStyleStore } = useStore();
 
   useEffect(() => {
+    if (danceStyleStore.inProgress) {
+      return;
+    }
     danceStyleStore.loadInitialData();
   }, [danceStyleStore]);
 

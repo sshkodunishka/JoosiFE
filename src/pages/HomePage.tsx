@@ -10,6 +10,9 @@ const Home: React.FC = () => {
   const { commonStore } = useStore();
 
   useEffect(() => {
+    if (commonStore.isLoadingDanceStyles) {
+      return;
+    }
     async function loadDanceStyles() {
       await commonStore.loadDanceStyles();
       await commonStore.loadDanceTrainers();
@@ -20,7 +23,8 @@ const Home: React.FC = () => {
   return (
     <Observer>
       {() => {
-        const { appName, isLoadingDanceStyles, danceStyles, choreographers } = commonStore;
+        const { isLoadingDanceStyles, danceStyles, choreographers } =
+          commonStore;
         return (
           <Box sx={{ width: '90%', height: '100%' }}>
             <Grid
