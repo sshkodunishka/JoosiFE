@@ -19,7 +19,7 @@ const MasterClassTrainer = observer((props: Props) => {
         width: '100%',
         p: 1,
       }}>
-      <Link to={`/users/${description.MasterClasses.Users.id}`}>
+      <Link to={`/choreographers/${description.MasterClasses.Users.id}`}>
         <Avatar
           sx={{ width: 50, height: 50 }}
           src={description.MasterClasses.Users.photoLink}
@@ -28,7 +28,7 @@ const MasterClassTrainer = observer((props: Props) => {
       </Link>
 
       <Box sx={{ ml: 2 }}>
-        <Link to={`/users/${description.MasterClasses.Users.id}`}>
+        <Link to={`/choreographers/${description.MasterClasses.Users.id}`}>
           <Typography sx={{ fontWeight: 'bold' }}>
             {description.MasterClasses.Users.name}
           </Typography>

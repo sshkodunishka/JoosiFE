@@ -13,6 +13,7 @@ import {
 import { useEffect } from 'react';
 import ListErrors from '@components/Errors/ListErrors';
 import { EmptyImageLink } from '@/services/constants';
+import DateComponent from '@components/Date';
 
 const ChoreographerPage: React.FC = () => {
   const navigate = useNavigate();
@@ -145,9 +146,7 @@ const ChoreographerPage: React.FC = () => {
                             sx={{ justifyContent: 'center' }}>
                             {masterClass.title}
                           </Typography>
-                          <Typography sx={{ justifyContent: 'center' }}>
-                            {description.eventDate}
-                          </Typography>
+                          <DateComponent eventDate={description.eventDate} />
                           <Typography sx={{ justifyContent: 'center', mt: 2 }}>
                             {masterClass.description.slice(0, 100) + '...'}
                           </Typography>

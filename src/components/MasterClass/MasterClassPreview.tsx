@@ -31,7 +31,7 @@ const MasterClassPreview: React.FC<Props> = (props) => {
             <CardHeader
               sx={{ backgroundColor: '#f5f5f5' }}
               avatar={
-                <Link to={`users/${description.MasterClasses.Users.id}`}>
+                <Link to={`choreographers/${description.MasterClasses.Users.id}`}>
                   <Avatar
                     sx={{ width: 50, height: 50 }}
                     src={description.MasterClasses.Users.photoLink}
@@ -47,7 +47,7 @@ const MasterClassPreview: React.FC<Props> = (props) => {
                   }}
                   width='100%'
                   direction='row'>
-                  <Link to={`users/${description.MasterClasses.Users.id}`}>
+                  <Link to={`choreographers/${description.MasterClasses.Users.id}`}>
                     {description.MasterClasses.Users.name}{' '}
                     {description.MasterClasses.Users.lastName}
                   </Link>
