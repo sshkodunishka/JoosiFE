@@ -31,7 +31,6 @@ const DanceStyleSelect: React.FC<Props> = () => {
     let selectedDanceStyles = [...danceStyles];
     const selectedDanceStylesIds = selectedDanceStyles.map((ds) => ds.id);
     for (let value of event.target.value) {
-      console.log(value);
       if (typeof value !== 'number') {
         continue;
       }

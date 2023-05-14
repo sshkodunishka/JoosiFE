@@ -60,7 +60,10 @@ const Editor: React.FC = () => {
   const handleDeleteMasterClassDescription = (
     description: CreateDescription | Descriptions
   ) => {
-    if (editorStore.masterClassesDescriptions.length === 1) {
+    if (
+      editorStore.masterClassId &&
+      editorStore.masterClassesDescriptions.length === 1
+    ) {
       handleDeleteMasterClass();
     } else {
       editorStore.deleteDescription(description);
@@ -69,14 +72,16 @@ const Editor: React.FC = () => {
 
   const handleDeleteMasterClass = () => {
     if (id) {
-      editorStore.deleteMasterClass(+id).then(() => navigate('/'));
+      editorStore.deleteMasterClass(+id).then(() => {
+        navigate('/');
+      });
     }
   };
 
   const submitForm = (ev: any) => {
     ev.preventDefault();
-    editorStore.submit().then((masterClass: any) => {
-      navigate(`/master-class/${masterClass.id}`);
+    editorStore.submit().then(() => {
+      navigate(`/`);
     });
   };
 

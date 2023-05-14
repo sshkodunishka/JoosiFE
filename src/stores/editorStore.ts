@@ -8,6 +8,7 @@ import {
   UpdateMasterClass,
   deleteDescriptionAPI,
   getMasterClassByIdAPI,
+  updateDescriptionAPI,
   uploadFileAPI,
 } from '@/services/masterClass';
 import { DanceStyle } from '@/services/dance-style';
@@ -151,7 +152,7 @@ export class EditorStore {
     this.videoLink = videoLink;
   }
 
-  saveDescription(description: Descriptions | CreateDescription) {
+  async saveDescription(description: Descriptions | CreateDescription) {
     let existedDescription;
     if ((description as CreateDescription).tempId) {
       existedDescription = this.masterClassesDescriptions.find(
@@ -166,12 +167,18 @@ export class EditorStore {
       );
     }
     if (existedDescription) {
-      this.updateDescription(description);
+      await this.updateDescription(description);
       return;
+    } else if (this.masterClassId) {
+      await masterClassStore.createMasterClassDescription(
+        this.masterClassId,
+        description as CreateDescription
+      );
     }
     runInAction(() => {
       this.masterClassesDescriptions.push(description);
     });
+
     return;
   }
 
@@ -195,22 +202,30 @@ export class EditorStore {
     }
   }
 
-  updateDescription(description: Descriptions | CreateDescription) {
+  async updateDescription(description: Descriptions | CreateDescription) {
     if ((description as Descriptions).id) {
-      this.masterClassesDescriptions = this.masterClassesDescriptions.map(
-        (desc) =>
-          (desc as Descriptions).id === (description as Descriptions).id
-            ? description
-            : desc
-      );
+      await updateDescriptionAPI({
+        ...(description as Descriptions),
+        classId: this.masterClassId!,
+      });
+      runInAction(() => {
+        this.masterClassesDescriptions = this.masterClassesDescriptions.map(
+          (desc) =>
+            (desc as Descriptions).id === (description as Descriptions).id
+              ? description
+              : desc
+        );
+      });
     } else {
-      this.masterClassesDescriptions = this.masterClassesDescriptions.map(
-        (desc) =>
-          (desc as CreateDescription).tempId ===
-          (description as CreateDescription).tempId
-            ? description
-            : desc
-      );
+      runInAction(() => {
+        this.masterClassesDescriptions = this.masterClassesDescriptions.map(
+          (desc) =>
+            (desc as CreateDescription).tempId ===
+            (description as CreateDescription).tempId
+              ? description
+              : desc
+        );
+      });
     }
   }
 

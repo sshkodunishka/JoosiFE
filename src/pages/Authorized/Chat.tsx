@@ -32,7 +32,6 @@ const ChatPage: React.FC = () => {
   };
 
   const handleMessageInputKeyDown = (ev: any) => {
-    console.log(ev.keyCode);
     switch (ev.keyCode) {
       case 13: // Enter
       case 9: // Tab

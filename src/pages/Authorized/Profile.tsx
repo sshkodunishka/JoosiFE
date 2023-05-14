@@ -44,7 +44,6 @@ const ProfilePage: React.FC = () => {
   const [updatingUser, setUpdatingUser] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log('user has been updated');
     if (userStore.currentUser) {
       setCurrentUser(userStore.currentUser);
     }

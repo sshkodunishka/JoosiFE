@@ -233,6 +233,22 @@ export const deleteDescriptionAPI = async (
   }
 };
 
+export const updateDescriptionAPI = async (
+  description: Descriptions
+): Promise<any> => {
+  try {
+    const response = await authAxiosInstance.put(
+      `/descriptions/${description.id}`,
+      description
+    );
+    const request = response.data;
+    return request;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
 export const getMasterClassByIdAPI = async (
   masterClassId: number
 ): Promise<any> => {
