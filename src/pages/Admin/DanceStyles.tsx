@@ -67,7 +67,7 @@ const AdminDanceStyles: React.FC = () => {
         return (
           <Box
             sx={{
-              backgroundColor: '#DDBDBD',
+              backgroundColor: '#EE82EE',
               m: 2,
               width: '80%',
               height: '100%',

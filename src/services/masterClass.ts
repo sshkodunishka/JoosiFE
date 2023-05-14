@@ -85,7 +85,7 @@ export const getUserDescriptionsAPI = async (
 ): Promise<Descriptions[]> => {
   try {
     const response = await authAxiosInstance.get(
-      `${API_URL}/descriptions/${role}`
+      `/descriptions/${role}`
     );
     const descriptions = response.data;
     return descriptions;
@@ -113,7 +113,7 @@ export const signUpForClassAPI = async (
 ): Promise<any> => {
   try {
     const response = await authAxiosInstance.post(
-      `${API_URL}/descriptions/${descriptionId}/requests`
+      `/descriptions/${descriptionId}/requests`
     );
     const request = response.data;
     return request;
@@ -126,7 +126,7 @@ export const signUpForClassAPI = async (
 export const cancelClassAPI = async (requestId: number): Promise<any> => {
   try {
     const response = await authAxiosInstance.delete(
-      `${API_URL}/requests/${requestId}`
+      `/requests/${requestId}`
     );
     const request = response.data;
     return request;
@@ -138,7 +138,7 @@ export const cancelClassAPI = async (requestId: number): Promise<any> => {
 
 export const createMasterClassAPI = async (masterClass: CreateMasterClass) => {
   try {
-    const response = await authAxiosInstance.post(`${API_URL}/master-classes`, {
+    const response = await authAxiosInstance.post(`/master-classes`, {
       title: masterClass.title,
       description: masterClass.description,
       imageLink: masterClass.imageLink,
@@ -159,7 +159,7 @@ export const createMasterClassDescriptionAPI = async (
   description: CreateDescription
 ): Promise<boolean> => {
   try {
-    const response = await authAxiosInstance.post(`${API_URL}/descriptions`, {
+    const response = await authAxiosInstance.post(`/descriptions`, {
       classId: masterClassId,
       countOfPeople: description.countOfPeople,
       eventDate: description.eventDate,
@@ -177,7 +177,7 @@ export const createMasterClassDescriptionAPI = async (
 
 export const uploadFileAPI = async (formData: FormData): Promise<string> => {
   try {
-    const response = await authAxiosInstance.post(`${API_URL}/files`, formData);
+    const response = await authAxiosInstance.post(`/files`, formData);
     return response.data.fileUrl;
   } catch (error) {
     console.log(error);

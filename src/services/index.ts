@@ -42,7 +42,7 @@ authAxiosInstance.interceptors.response.use(
         originalConfig._retry = true;
         try {
           const response = await authAxiosInstance.post(
-            `${API_URL}/auth/refresh-token`,
+            `/auth/refresh-token`,
             {
               refreshToken: commonStore.refreshToken,
             }
