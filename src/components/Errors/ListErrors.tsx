@@ -2,28 +2,28 @@ import React from 'react';
 import { List, ListItem, ListItemText } from '@mui/material';
 
 type Props = {
-  errors?: any[]
-}
+  errors?: any[];
+};
 
-const ListErrors: React.FC<Props> = props => {
+const ListErrors: React.FC<Props> = (props) => {
   const errors = props.errors;
   if (errors) {
     return (
       <List>
-        {
-          Object.keys(errors).map((key: any) => {
-            return (
-              <ListItem key={key}>
-                <ListItemText primary={`${key} ${errors[key]}`} />
-              </ListItem>
-            );
-          })
-        }
+        {Object.values(errors).map((error: any, index) => {
+          return (
+            <ListItem
+              sx={{ color: 'red' }}
+              key={index}>
+              <ListItemText primary={`${error}`} />
+            </ListItem>
+          );
+        })}
       </List>
     );
   } else {
     return null;
   }
-}
+};
 
 export default ListErrors;

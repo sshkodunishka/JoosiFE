@@ -4,7 +4,10 @@ import {
   CreateDescription,
   CreateMasterClass,
   Descriptions,
+  MasterClass,
   UpdateMasterClass,
+  deleteDescriptionAPI,
+  getMasterClassByIdAPI,
   uploadFileAPI,
 } from '@/services/masterClass';
 import { DanceStyle } from '@/services/dance-style';
@@ -45,6 +48,7 @@ export class EditorStore {
       addDanceStyle: action,
       removeDanceStyle: action,
       submit: action,
+      setDanceStyles: action,
     });
   }
 
@@ -61,15 +65,37 @@ export class EditorStore {
       runInAction(() => {
         this.inProgress = true;
       });
-      const masterClass = await masterClassStore.loadDescription(
-        this.masterClassId,
-        { acceptCached: true }
-      );
-      if (!masterClass) throw new Error("Can't load original masterClass");
-      // this.description = masterClass.description;
-      // this.danceStyles = masterClass.danceStyles;
+      const masterClass = await this.loadMasterClass(this.masterClassId);
+      if (!masterClass) {
+        this.masterClassId = null;
+        this.errors = ["Can't load original masterClass"];
+        return;
+      }
+      this.title = masterClass.title;
+      this.photoLink = masterClass.imageLink;
+      this.videoLink = masterClass.videoLink;
+      this.description = masterClass.description;
+      this.danceStyles = masterClass.ClassesStyles.map((cs) => cs.style);
+      this.masterClassesDescriptions = masterClass.Descriptions;
     } catch (e) {
       console.error(e);
+    } finally {
+      runInAction(() => {
+        this.inProgress = false;
+      });
+    }
+  }
+
+  async loadMasterClass(masterClassId: number) {
+    this.inProgress = true;
+    try {
+      const masterClass: MasterClass = await getMasterClassByIdAPI(
+        masterClassId
+      );
+      return masterClass;
+    } catch (e) {
+      console.error(e);
+      return null;
     } finally {
       runInAction(() => {
         this.inProgress = false;
@@ -84,6 +110,7 @@ export class EditorStore {
     this.description = '';
     this.danceStyles = [];
     this.masterClassesDescriptions = [];
+    this.errors = undefined;
   }
 
   setTitle(title: string) {
@@ -148,17 +175,23 @@ export class EditorStore {
     return;
   }
 
-  deleteDescription(description: Descriptions | CreateDescription) {
+  async deleteDescription(description: Descriptions | CreateDescription) {
     if ((description as Descriptions).id) {
-      this.masterClassesDescriptions = this.masterClassesDescriptions.filter(
-        (desc) => (desc as Descriptions).id !== (description as Descriptions).id
-      );
+      await deleteDescriptionAPI((description as Descriptions).id);
+      runInAction(() => {
+        this.masterClassesDescriptions = this.masterClassesDescriptions.filter(
+          (desc) =>
+            (desc as Descriptions).id !== (description as Descriptions).id
+        );
+      });
     } else {
-      this.masterClassesDescriptions = this.masterClassesDescriptions.filter(
-        (desc) =>
-          (desc as CreateDescription).tempId !==
-          (description as CreateDescription).tempId
-      );
+      runInAction(() => {
+        this.masterClassesDescriptions = this.masterClassesDescriptions.filter(
+          (desc) =>
+            (desc as CreateDescription).tempId !==
+            (description as CreateDescription).tempId
+        );
+      });
     }
   }
 
@@ -196,6 +229,7 @@ export class EditorStore {
 
   async submit() {
     try {
+      if (this.inProgress) return;
       this.inProgress = true;
       this.errors = undefined;
       const masterClassDTO: CreateMasterClass | UpdateMasterClass = {
@@ -207,16 +241,40 @@ export class EditorStore {
         id: this.masterClassId,
         Descriptions: [],
       };
-      const masterClass = await masterClassStore.createMasterClass(
-        masterClassDTO
-      );
-
-      for (let description of this.masterClassesDescriptions) {
-        await masterClassStore.createMasterClassDescription(
-          masterClass.id,
-          description as CreateDescription
+      if (this.masterClassId) {
+        await masterClassStore.updateMasterClass(
+          masterClassDTO as UpdateMasterClass
         );
+      } else {
+        const masterClass = await masterClassStore.createMasterClass(
+          masterClassDTO
+        );
+
+        for (let description of this.masterClassesDescriptions) {
+          await masterClassStore.createMasterClassDescription(
+            masterClass.id,
+            description as CreateDescription
+          );
+        }
       }
+    } catch (e: any) {
+      runInAction(() => {
+        this.errors = [e.response?.data?.message];
+        console.log(e);
+      });
+    } finally {
+      runInAction(() => {
+        this.reset();
+        this.inProgress = false;
+      });
+    }
+  }
+
+  async deleteMasterClass(masterClassId: number) {
+    try {
+      if (this.inProgress) return;
+      this.inProgress = true;
+      await masterClassStore.deleteMasterClass(masterClassId);
     } catch (e: any) {
       runInAction(() => {
         this.errors = [e.response?.data?.message];

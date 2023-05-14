@@ -18,6 +18,7 @@ export const getCurrentUserAPI = async (): Promise<User> => {
       photoLink: response.data.photoLink,
       Roles: response.data.Roles,
       roleId: response.data.Roles.id,
+      description: response.data.description,
     };
     return user;
   } catch (e) {
@@ -67,6 +68,35 @@ export const getOneChoreoghrapherAPI = async (
 ): Promise<Choreographers> => {
   try {
     const response = await axios.get(`${API_URL}/users/choreographers/${id}`);
+    const users = response.data;
+    return users;
+  } catch (error: any) {
+    console.log(error);
+    throw error.response.data.message;
+  }
+};
+
+export const updateUserProfileAPI = async (
+  userDto: Partial<User>
+): Promise<Choreographers> => {
+  try {
+    const response = await authAxiosInstance.put(`/users/profile`, userDto);
+    const users = response.data;
+    return users;
+  } catch (error: any) {
+    console.log(error);
+    throw error.response.data.message;
+  }
+};
+
+export const updateUserProfileImageAPI = async (
+  userDto: Pick<User, 'photoLink'>
+): Promise<Choreographers> => {
+  try {
+    const response = await authAxiosInstance.put(
+      `/users/profile/image`,
+      userDto
+    );
     const users = response.data;
     return users;
   } catch (error: any) {

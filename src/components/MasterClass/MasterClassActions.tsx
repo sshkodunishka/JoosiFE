@@ -14,7 +14,6 @@ type Props = {
 
 const MasterClassActions: React.FC<Props> = (props) => {
   const description = props.description;
-  const handleDelete = () => props.onDelete(description.id);
   const navigate = useNavigate();
 
   useEffect(() => {}, [props.currentUser, description]);
@@ -48,7 +47,7 @@ const MasterClassActions: React.FC<Props> = (props) => {
       <span>
         <Link
           component={RouteLink}
-          to={`/editor/${description.id}`}
+          to={`/editor/${description.MasterClasses.id}`}
           underline='none'
           sx={{ mr: 1 }}>
           <Button
@@ -58,12 +57,6 @@ const MasterClassActions: React.FC<Props> = (props) => {
             Edit
           </Button>
         </Link>
-
-        <IconButton
-          size='small'
-          onClick={handleDelete}>
-          <Delete />
-        </IconButton>
       </span>
     );
   }

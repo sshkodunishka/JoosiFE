@@ -1,7 +1,10 @@
-import { User } from '@/services/masterClass';
-import { getCurrentUserAPI } from '@/services/user-service';
+import { User, uploadFileAPI } from '@/services/masterClass';
+import {
+  getCurrentUserAPI,
+  updateUserProfileAPI,
+  updateUserProfileImageAPI,
+} from '@/services/user-service';
 import { action, makeObservable, observable, runInAction } from 'mobx';
-const agent: any = {};
 
 export class UserStore {
   currentUser?: User;
@@ -17,6 +20,8 @@ export class UserStore {
       updatingUserErrors: observable,
       pullUser: action,
       signOut: action,
+      updateUser: action,
+      uploadFile: action,
     });
   }
 
@@ -29,10 +34,10 @@ export class UserStore {
     });
   }
 
-  async updateUser(newUser: User) {
+  async updateUser(newUser: Partial<User>) {
     this.updatingUser = true;
     try {
-      const user = await agent.User.update(newUser);
+      const user = await updateUserProfileAPI(newUser);
       runInAction(() => {
         this.currentUser = user;
       });
@@ -44,6 +49,29 @@ export class UserStore {
       runInAction(() => {
         this.updatingUser = false;
       });
+    }
+  }
+
+  async uploadFile(file: any) {
+    this.updatingUser = true;
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const fileUrl = await uploadFileAPI(formData);
+      await updateUserProfileImageAPI({
+        photoLink: fileUrl,
+      });
+      runInAction(() => {
+        this.currentUser = {
+          ...(this.currentUser as User),
+          photoLink: fileUrl,
+        };
+      });
+      return fileUrl;
+    } catch (e) {
+      console.error(e);
+    } finally {
+      this.updatingUser = false;
     }
   }
 

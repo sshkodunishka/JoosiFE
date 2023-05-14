@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Observer } from 'mobx-react-lite';
 import { useStore } from '@/store';
@@ -9,7 +9,6 @@ import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import { Typography } from '@mui/material';
 import { User } from '@/services/masterClass';
-import { Choreographers } from '../services/user-service';
 
 const LoggedOutView = (props: any) => {
   const { currentUser } = props;
@@ -127,6 +126,7 @@ const LoggedInView = (props: { currentUser?: User }) => {
 
 const Header = () => {
   const { commonStore, userStore } = useStore();
+    
   return (
     <Observer>
       {() => (

@@ -9,6 +9,8 @@ import {
 } from '@mui/material';
 import { useStore } from '@/store';
 import { DanceStyle } from '@/services/dance-style';
+import { useEffect, useState } from 'react';
+import { runInAction } from 'mobx';
 
 interface Props {
   allDanceStyles: DanceStyle[];
@@ -16,33 +18,37 @@ interface Props {
 
 const DanceStyleSelect: React.FC<Props> = () => {
   const theme = useTheme();
-
   const { editorStore, commonStore } = useStore();
-  const danceStyles = editorStore.danceStyles;
+  const [danceStyles, setDanceStyles] = useState<DanceStyle[]>([]);
+
+  useEffect(() => {
+    setDanceStyles(editorStore.danceStyles);
+  }, [editorStore.danceStyles]);
 
   const { danceStyles: allDanceStyles } = commonStore;
 
   const handleChange = (event: any) => {
-    const selectedDanceStyles = [...danceStyles];
+    let selectedDanceStyles = [...danceStyles];
+    const selectedDanceStylesIds = selectedDanceStyles.map((ds) => ds.id);
     for (let value of event.target.value) {
+      console.log(value);
       if (typeof value !== 'number') {
         continue;
       }
       const selectedStyle: DanceStyle = commonStore.danceStyles.find(
         (ds) => ds.id === value
       )!;
-      if (selectedDanceStyles.includes(selectedStyle)) {
+      if (selectedDanceStylesIds.includes(selectedStyle.id)) {
         // If the style is already selected, remove it
-        selectedDanceStyles.splice(
-          selectedDanceStyles.indexOf(selectedStyle),
-          1
+        selectedDanceStyles = selectedDanceStyles.filter(
+          (ds) => ds.id !== selectedStyle.id
         );
       } else {
         // If the style is not already selected, add it
         selectedDanceStyles.push(selectedStyle);
       }
     }
-    editorStore.setDanceStyles(selectedDanceStyles);
+      editorStore.setDanceStyles(selectedDanceStyles);
   };
 
   const getStyles = (id: number, danceStyles: DanceStyle[], theme: Theme) => {

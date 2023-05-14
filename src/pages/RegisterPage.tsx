@@ -16,9 +16,6 @@ const Register: React.FC = (props: any) => {
   const { authStore } = useStore();
   const navigate = useNavigate();
 
-  const handleNameChange = (e: any) => authStore.setName(e.target.value);
-  const handleLastNameChange = (e: any) =>
-    authStore.setLastName(e.target.value);
   const handleLoginChange = (e: any) => authStore.setLogin(e.target.value);
   const handlePasswordChange = (e: any) =>
     authStore.setPassword(e.target.value);
@@ -38,10 +35,32 @@ const Register: React.FC = (props: any) => {
     authStore.reset();
   }, [authStore]);
 
+  const isValidName = (name: string): boolean => {
+    return name.length > 2;
+  };
+
+  const isValidLogin = (login: string): boolean => {
+    return login.length > 3;
+  };
+
+  const isValidPassword = (password: string): boolean => {
+    // const pattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{4,}$/; // 1 -number, 1 letter and >4 length
+    // return pattern.test(password);
+    return password.length > 3;
+  };
+
   return (
     <Observer>
       {() => {
         const { values, errors, inProgress } = authStore;
+        const isButtonDisabled = () => {
+          return !(
+            isValidName(values?.name || '') &&
+            isValidName(values.lastName || '') &&
+            values.login &&
+            values.password
+          );
+        };
 
         return (
           <Container
@@ -85,8 +104,21 @@ const Register: React.FC = (props: any) => {
                   name='name'
                   autoComplete='name'
                   autoFocus
+                  error={!!values.name && !isValidName(values.name)}
+                  helperText={
+                    !!values.name && !isValidName(values.name)
+                      ? 'Should be >2'
+                      : ''
+                  }
                   value={values.name}
-                  onChange={handleNameChange}
+                  onChange={(event) => {
+                    const inputValue = event.target.value;
+                    const isValidInput =
+                      /^[a-zA-Z]+$/.test(inputValue) || inputValue === '';
+                    if (isValidInput) {
+                      authStore.setName(inputValue);
+                    }
+                  }}
                 />
 
                 <TextField
@@ -97,9 +129,21 @@ const Register: React.FC = (props: any) => {
                   label='Last Name'
                   name='lastName'
                   autoComplete='lastName'
-                  autoFocus
                   value={values.lastName}
-                  onChange={handleLastNameChange}
+                  error={!!values.lastName && !isValidName(values.lastName)}
+                  helperText={
+                    values.lastName && !isValidName(values.lastName)
+                      ? 'Should be >2'
+                      : ''
+                  }
+                  onChange={(event) => {
+                    const inputValue = event.target.value;
+                    const isValidInput =
+                      /^[a-zA-Z]+$/.test(inputValue) || inputValue === '';
+                    if (isValidInput) {
+                      authStore.setLastName(inputValue);
+                    }
+                  }}
                 />
 
                 <TextField
@@ -113,6 +157,12 @@ const Register: React.FC = (props: any) => {
                   type='login'
                   value={values.login}
                   onChange={handleLoginChange}
+                  error={!!values.login && !isValidLogin(values.login)}
+                  helperText={
+                    values.login && !isValidLogin(values.login)
+                      ? 'Should be >3'
+                      : ''
+                  }
                 />
 
                 <TextField
@@ -123,9 +173,14 @@ const Register: React.FC = (props: any) => {
                   label='Password'
                   type='password'
                   id='password'
-                  autoComplete='current-password'
                   value={values.password}
                   onChange={handlePasswordChange}
+                  error={!!values.password && !isValidPassword(values.password)}
+                  helperText={
+                    !!values.password && !isValidPassword(values.password)
+                      ? 'Should be >3'
+                      : ''
+                  }
                 />
 
                 <Button
@@ -133,7 +188,7 @@ const Register: React.FC = (props: any) => {
                   fullWidth
                   variant='contained'
                   sx={{ mt: 3, mb: 2 }}
-                  disabled={inProgress}>
+                  disabled={inProgress || isButtonDisabled()}>
                   Sign up
                 </Button>
               </Box>

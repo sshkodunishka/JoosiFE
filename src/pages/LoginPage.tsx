@@ -79,6 +79,7 @@ const Login = (props: any) => {
                       variant='outlined'
                       value={values.login}
                       onChange={handleLoginChange}
+                      required
                     />
                   </Grid>
 
@@ -92,6 +93,7 @@ const Login = (props: any) => {
                       variant='outlined'
                       value={values.password}
                       onChange={handlePasswordChange}
+                      required
                     />
                   </Grid>
 

@@ -52,6 +52,7 @@ export class AuthStore {
   }
 
   reset() {
+    this.errors = undefined;
     this.values.name = '';
     this.values.lastName = '';
     this.values.login = '';

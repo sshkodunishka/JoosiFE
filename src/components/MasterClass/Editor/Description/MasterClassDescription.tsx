@@ -1,6 +1,6 @@
 import { CreateDescription, Descriptions } from '@/services/masterClass';
 import { Delete, Edit } from '@mui/icons-material';
-import { Button, Card, IconButton, Stack, TextField } from '@mui/material';
+import { Card, IconButton, Stack, TextField } from '@mui/material';
 
 type Props = {
   description: Descriptions | CreateDescription;

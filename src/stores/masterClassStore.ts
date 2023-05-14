@@ -11,6 +11,8 @@ import {
   cancelClassAPI,
   signUpForClassAPI,
   getUserDescriptionsAPI,
+  deleteClassAPI,
+  updateMasterClassAPI,
 } from '@/services/masterClass';
 import {
   action,
@@ -82,6 +84,8 @@ export class MasterClassStore {
     });
   }
 
+  
+
   getMasterClass(id: number | null): Descriptions | null {
     if (!id) {
       return null;
@@ -121,9 +125,24 @@ export class MasterClassStore {
     });
   }
 
-  async deleteMasterClass(id: number) {}
+  async deleteMasterClass(id: number) {
+    try {
+      await deleteClassAPI(id);
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
 
-  async updateMasterClass(masterClass: UpdateMasterClass) {}
+  async updateMasterClass(masterClass: UpdateMasterClass) {
+    try {
+      const masterClassResp = await updateMasterClassAPI(masterClass);
+      return masterClassResp;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
 
   async createMasterClass(
     masterClass: CreateMasterClass

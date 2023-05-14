@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Observer } from 'mobx-react-lite';
 import { useStore } from '@/store';
@@ -10,6 +10,7 @@ import {
   Box,
   Typography,
   Stack,
+  IconButton,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { CreateDescription, Descriptions } from '@/services/masterClass';
@@ -17,6 +18,7 @@ import MasterClassDescriptionEditor from '@components/MasterClass/Editor/Descrip
 import MasterClassDescription from '@components/MasterClass/Editor/Description/MasterClassDescription';
 import DanceStyleSelect from '@components/MasterClass/Editor/DanceStyleSelect';
 import UploadSection from '@components/MasterClass/Editor/UploadSection';
+import { Delete } from '@mui/icons-material';
 
 const Editor: React.FC = () => {
   const { id } = useParams();
@@ -58,7 +60,17 @@ const Editor: React.FC = () => {
   const handleDeleteMasterClassDescription = (
     description: CreateDescription | Descriptions
   ) => {
-    editorStore.deleteDescription(description);
+    if (editorStore.masterClassesDescriptions.length === 1) {
+      handleDeleteMasterClass();
+    } else {
+      editorStore.deleteDescription(description);
+    }
+  };
+
+  const handleDeleteMasterClass = () => {
+    if (id) {
+      editorStore.deleteMasterClass(+id).then(() => navigate('/'));
+    }
   };
 
   const submitForm = (ev: any) => {
@@ -119,9 +131,15 @@ const Editor: React.FC = () => {
                 component='form'
                 onSubmit={submitForm}
                 sx={{ mt: 2 }}>
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant='h4'>Create a master class</Typography>
-                </Box>
+                {!id ? (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant='h4'>Create a master class</Typography>
+                  </Box>
+                ) : (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant='h4'>Edit a master class</Typography>
+                  </Box>
+                )}
 
                 <Stack
                   direction='row'
@@ -216,13 +234,36 @@ const Editor: React.FC = () => {
                       hidden={addNewDetail}>
                       Add new detail
                     </Button>
-                    <Button
-                      variant='contained'
-                      onClick={(e) => submitForm(e)}
-                      disabled={inProgress || !isValid()}
-                      sx={{ mt: 2 }}>
-                      Create Master Class
-                    </Button>
+                    {!id ? (
+                      <Button
+                        variant='contained'
+                        onClick={(e) => submitForm(e)}
+                        disabled={inProgress || !isValid()}
+                        sx={{ mt: 2 }}>
+                        Create Master Class
+                      </Button>
+                    ) : (
+                      <Box
+                        sx={{
+                          width: '100%',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          mt: 2,
+                        }}>
+                        <Button
+                          variant='contained'
+                          onClick={(e) => submitForm(e)}
+                          disabled={inProgress || !isValid()}>
+                          Update Master Class
+                        </Button>
+                        <IconButton
+                          size='small'
+                          onClick={handleDeleteMasterClass}>
+                          <Delete />
+                        </IconButton>
+                      </Box>
+                    )}
                   </Stack>
                 </Box>
               </Box>

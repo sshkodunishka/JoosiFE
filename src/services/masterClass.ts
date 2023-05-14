@@ -7,6 +7,7 @@ export interface User {
   name: string;
   login: string;
   lastName: string;
+  description?: string;
   photoLink?: string;
   roleId: number;
   Roles: {
@@ -59,7 +60,9 @@ export type CreateMasterClass = Omit<
   danceStylesIds: number[];
 };
 
-export type UpdateMasterClass = Omit<MasterClass, 'creator'>;
+export type UpdateMasterClass = Omit<MasterClass, 'creator'> & {
+  danceStylesIds: number[];
+};
 
 export const getUpcomingDescriptionsAPI = async ({
   danceStyleId,
@@ -84,9 +87,7 @@ export const getUserDescriptionsAPI = async (
   role: string
 ): Promise<Descriptions[]> => {
   try {
-    const response = await authAxiosInstance.get(
-      `/descriptions/${role}`
-    );
+    const response = await authAxiosInstance.get(`/descriptions/${role}`);
     const descriptions = response.data;
     return descriptions;
   } catch (error) {
@@ -125,9 +126,7 @@ export const signUpForClassAPI = async (
 
 export const cancelClassAPI = async (requestId: number): Promise<any> => {
   try {
-    const response = await authAxiosInstance.delete(
-      `/requests/${requestId}`
-    );
+    const response = await authAxiosInstance.delete(`/requests/${requestId}`);
     const request = response.data;
     return request;
   } catch (error) {
@@ -145,6 +144,27 @@ export const createMasterClassAPI = async (masterClass: CreateMasterClass) => {
       videoLink: masterClass.videoLink,
       danceStylesId: masterClass.danceStylesIds,
     });
+
+    const masterClassResp = response.data;
+    return masterClassResp;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const updateMasterClassAPI = async (masterClass: UpdateMasterClass) => {
+  try {
+    const response = await authAxiosInstance.put(
+      `/master-classes/${masterClass.id}`,
+      {
+        title: masterClass.title,
+        description: masterClass.description,
+        imageLink: masterClass.imageLink,
+        videoLink: masterClass.videoLink,
+        danceStylesId: masterClass.danceStylesIds,
+      }
+    );
 
     const masterClassResp = response.data;
     return masterClassResp;
@@ -179,6 +199,49 @@ export const uploadFileAPI = async (formData: FormData): Promise<string> => {
   try {
     const response = await authAxiosInstance.post(`/files`, formData);
     return response.data.fileUrl;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const deleteClassAPI = async (masterClassId: number): Promise<any> => {
+  try {
+    const response = await authAxiosInstance.delete(
+      `/master-classes/${masterClassId}`
+    );
+    const request = response.data;
+    return request;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const deleteDescriptionAPI = async (
+  descriptionId: number
+): Promise<any> => {
+  try {
+    const response = await authAxiosInstance.delete(
+      `/descriptions/${descriptionId}`
+    );
+    const request = response.data;
+    return request;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getMasterClassByIdAPI = async (
+  masterClassId: number
+): Promise<any> => {
+  try {
+    const response = await authAxiosInstance.get(
+      `/master-classes/${masterClassId}`
+    );
+    const request = response.data;
+    return request;
   } catch (error) {
     console.log(error);
     throw error;
