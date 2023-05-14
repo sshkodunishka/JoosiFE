@@ -1,7 +1,15 @@
 import commonStore from '../stores/commonStore';
 import axios from 'axios';
-export const API_URL = 'http://localhost:5000/api';
-export const WS_URL = 'http://localhost:5001/';
+
+export const API_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5000/api'
+    : 'http://localhost/api';
+
+export const WS_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5001'
+    : 'http://localhost/';
 
 export const authAxiosInstance = axios.create({
   baseURL: API_URL,

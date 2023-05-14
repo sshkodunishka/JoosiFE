@@ -11,7 +11,7 @@ import {
   Box,
   Chip,
 } from '@mui/material';
-import { Descriptions, MasterClass } from '@/services/masterClass';
+import { Descriptions } from '@/services/masterClass';
 import { useNavigate, Link } from 'react-router-dom';
 import DateComponent from '@components/Date';
 import { EmptyImageLink } from '../../services/constants';
@@ -129,7 +129,7 @@ const MasterClassPreview: React.FC<Props> = (props) => {
                 <Typography
                   variant='body1'
                   sx={{ mb: 1 }}>
-                  {description.MasterClasses.description.slice(0, 100) + '...'}
+                  {description.MasterClasses.description?.slice(0, 100) + '...'}
                 </Typography>
 
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', mb: 2 }}>

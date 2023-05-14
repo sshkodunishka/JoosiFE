@@ -35,8 +35,8 @@ export class ChatStore {
     if (this.socket) {
       this.socket.disconnect();
     }
-
     this.socket = io(WS_URL, {
+      path: '/api/websocket',
       auth: {
         token: accessToken,
       },
