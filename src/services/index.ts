@@ -4,12 +4,12 @@ import axios from 'axios';
 export const API_URL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:5000/api'
-    : 'http://localhost/api';
+    : '/api';
 
 export const WS_URL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:5001'
-    : 'http://localhost/';
+    : '/';
 
 export const authAxiosInstance = axios.create({
   baseURL: API_URL,
