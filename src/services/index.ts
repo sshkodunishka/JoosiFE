@@ -8,7 +8,7 @@ export const API_URL =
 
 export const WS_URL =
   process.env.NODE_ENV === 'development'
-    ? 'http://localhost:5001'
+    ? 'http://localhost:5000'
     : '/';
 
 export const authAxiosInstance = axios.create({
