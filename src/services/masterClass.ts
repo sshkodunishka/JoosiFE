@@ -87,6 +87,7 @@ export const getUserDescriptionsAPI = async (
   role: string
 ): Promise<Descriptions[]> => {
   try {
+
     const response = await authAxiosInstance.get(`/descriptions/${role}`);
     const descriptions = response.data;
     return descriptions;
@@ -103,6 +104,19 @@ export const getDescriptionByIdAPI = async (
     const response = await axios.get(`${API_URL}/descriptions/${id}`);
     const description = response.data;
     return description;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getRequestsByDescIdAPI = async (
+  id: number
+): Promise<User[]> => {
+  try {
+    const response = await authAxiosInstance.get(`/descriptions/${id}/requests`);
+    const userRequests = response.data;
+    return userRequests;
   } catch (error) {
     console.log(error);
     throw error;

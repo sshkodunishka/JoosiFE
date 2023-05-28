@@ -13,6 +13,8 @@ import {
   getUserDescriptionsAPI,
   deleteClassAPI,
   updateMasterClassAPI,
+  User,
+  getRequestsByDescIdAPI,
 } from '@/services/masterClass';
 import {
   action,
@@ -21,6 +23,7 @@ import {
   observable,
   runInAction,
 } from 'mobx';
+import { RootStore } from '.';
 
 const LIMIT = 10;
 
@@ -30,7 +33,7 @@ export class MasterClassStore {
   page = 0;
   totalPagesCount = 0;
   description: Descriptions | null = null;
-
+  listOfUsers: User[] = []
   constructor() {
     makeObservable(this, {
       isLoading: observable,
@@ -38,6 +41,7 @@ export class MasterClassStore {
       totalPagesCount: observable,
       masterClasssDescRegistry: observable,
       description: observable,
+      listOfUsers: observable,
       descriptions: computed,
       setPage: action,
       loadMasterClasss: action,
@@ -84,7 +88,7 @@ export class MasterClassStore {
     });
   }
 
-  
+
 
   getMasterClass(id: number | null): Descriptions | null {
     if (!id) {
@@ -93,15 +97,16 @@ export class MasterClassStore {
     return this.masterClasssDescRegistry.get(id);
   }
 
-  async loadDescription(id: number, { acceptCached = false } = {}) {
+  async loadDescription(id: number, userId: number | undefined) {
     this.isLoading = true;
-    if (acceptCached) {
-      const masterClass = this.getMasterClass(id);
-      if (masterClass) return Promise.resolve(masterClass);
-    }
     const description = await getDescriptionByIdAPI(id);
+    let listOfUsers : User[] = []
+    if(description.MasterClasses.creatorId===userId) {
+      listOfUsers = await getRequestsByDescIdAPI(id)
+    }
     runInAction(() => {
       this.description = description;
+      this.listOfUsers = listOfUsers
       this.isLoading = false;
     });
     return description;

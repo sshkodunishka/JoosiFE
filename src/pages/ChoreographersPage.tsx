@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 const ChoreographersPage: React.FC = () => {
   const { choreographersStore } = useStore();
   const navigate = useNavigate();
+
   useEffect(() => {
     if (choreographersStore.isLoading) {
       return;
@@ -77,7 +78,8 @@ const ChoreographersPage: React.FC = () => {
                 </Card>
               ))}
               {choreographersStore.choreographers.length === 0 && (
-                <Typography variant='h5'>No choreographers</Typography>
+              
+              <Typography variant='h5'>No choreographers</Typography>
               )}
             </Box>
           </Box>

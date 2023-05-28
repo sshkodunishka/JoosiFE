@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Observer } from 'mobx-react-lite';
+import React, { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Observer } from "mobx-react-lite";
 import {
+  Avatar,
   Box,
   Card,
   CardMedia,
@@ -9,19 +10,19 @@ import {
   CircularProgress,
   Stack,
   Typography,
-} from '@mui/material';
+} from "@mui/material";
 
 import {
   Place,
   AttachMoneyOutlined,
   People,
   DateRange,
-} from '@mui/icons-material';
-import { useStore } from '../store';
-import RedError from '@components/Errors/RedError';
-import MasterClassTrainer from '../components/MasterClass/MasterClassMeta';
-import MasterClassActions from '../components/MasterClass/MasterClassActions';
-import { EmptyImageLink } from '@/services/constants';
+} from "@mui/icons-material";
+import { useStore } from "../store";
+import RedError from "@components/Errors/RedError";
+import MasterClassTrainer from "../components/MasterClass/MasterClassMeta";
+import MasterClassActions from "../components/MasterClass/MasterClassActions";
+import { EmptyImageLink } from "@/services/constants";
 
 const MasterClass: React.FC = () => {
   const navigate = useNavigate();
@@ -30,15 +31,15 @@ const MasterClass: React.FC = () => {
   useEffect(() => {
     if (id) {
       if (isNaN(+id)) {
-        navigate('/');
+        navigate("/");
         return;
       }
-      masterClassStore.loadDescription(+id);
+      masterClassStore.loadDescription(+id, userStore.currentUser?.id);
     }
   }, [masterClassStore, id]);
 
   const handleDeleteDescription = (id: number) => {
-    masterClassStore.deleteMasterClass(id).then(() => navigate('/'));
+    masterClassStore.deleteMasterClass(id).then(() => navigate("/"));
   };
 
   const handleSignUp = (id: number) => {
@@ -53,7 +54,7 @@ const MasterClass: React.FC = () => {
     <Observer>
       {() => {
         const { currentUser } = userStore;
-        const { description, isLoading } = masterClassStore;
+        const { listOfUsers, description, isLoading } = masterClassStore;
         if (!id) return <RedError message="Can't load masterClass" />;
         if (isLoading) <CircularProgress />;
         if (!description) return <RedError message="Can't load masterClass" />;
@@ -61,89 +62,71 @@ const MasterClass: React.FC = () => {
         return (
           <Box
             sx={{
-              mt: '10px',
-              mb: '10px',
-              width: '90%',
-              height: '100%',
-            }}>
+              mt: "10px",
+              mb: "10px",
+              width: "90%",
+              height: "100%",
+            }}
+          >
             <Card
               sx={{
-                display: 'flex',
-                flexDirection: 'column',
-              }}>
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
               {/* MasterClass title, photo, meta  */}
-              <Stack direction='row'>
+              <Stack direction="row">
                 <Card
                   sx={{
                     m: 1,
                     p: 1,
-                    flexBasis: '30%',
-                  }}>
-                  <Box sx={{ height: '300px' }}>
+                    flexBasis: "30%",
+                  }}
+                >
+                  <Box sx={{ height: "300px" }}>
                     <CardMedia
-                      component='img'
-                      height='250'
+                      component="img"
+                      height="250"
                       image={
                         description.MasterClasses.imageLink || EmptyImageLink
                       }
-                      alt={'masterClass image'}
+                      alt={"masterClass image"}
                       sx={{
-                        objectFit: 'contain',
+                        objectFit: "contain",
                       }}
                     />
                   </Box>
 
-                  <Stack
-                    direction='row'
-                    minWidth='50%'
-                    sx={{ mb: 2 }}>
-                    <Place
-                      sx={{ mr: 1 }}
-                      color='primary'
-                    />
+                  <Stack direction="row" minWidth="50%" sx={{ mb: 2 }}>
+                    <Place sx={{ mr: 1 }} color="primary" />
                     <Typography>{description.place}</Typography>
                   </Stack>
 
-                  <Stack
-                    sx={{ mb: 2 }}
-                    direction='row'>
-                    <AttachMoneyOutlined
-                      sx={{ mr: 1 }}
-                      color='primary'
-                    />
+                  <Stack sx={{ mb: 2 }} direction="row">
+                    <AttachMoneyOutlined sx={{ mr: 1 }} color="primary" />
                     <Typography>{description.price}</Typography>
                   </Stack>
 
-                  <Stack
-                    sx={{ mb: 2 }}
-                    direction='row'>
-                    <People
-                      sx={{ mr: 1 }}
-                      color='primary'
-                    />
+                  <Stack sx={{ mb: 2 }} direction="row">
+                    <People sx={{ mr: 1 }} color="primary" />
                     <Typography>{description.countOfPeople}</Typography>
                   </Stack>
 
-                  <Stack
-                    direction='row'
-                    sx={{ mb: 2, width: '100%' }}>
-                    <DateRange
-                      sx={{ mr: 1 }}
-                      color='primary'
-                    />
+                  <Stack direction="row" sx={{ mb: 2, width: "100%" }}>
+                    <DateRange sx={{ mr: 1 }} color="primary" />
                     <Typography>
                       {new Date(description.eventDate).toDateString() +
-                        ' ' +
+                        " " +
                         new Date(description.eventDate)
                           .toLocaleTimeString()
                           .substring(0, 5)}
                       {}
                     </Typography>
                   </Stack>
-                  <Typography sx={{ mb: 1, fontWeight: 'bold' }}>
+                  <Typography sx={{ mb: 1, fontWeight: "bold" }}>
                     Styles:
                   </Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', mb: 2 }}>
+                  <Box sx={{ display: "flex", flexWrap: "wrap", mb: 2 }}>
                     {description.MasterClasses.ClassesStyles.map(
                       (danceStyle) => {
                         return (
@@ -151,7 +134,7 @@ const MasterClass: React.FC = () => {
                             key={danceStyle.style.id}
                             label={danceStyle.style.style}
                             sx={{ mr: 1, mb: 1 }}
-                            variant='outlined'
+                            variant="outlined"
                           />
                         );
                       }
@@ -159,46 +142,47 @@ const MasterClass: React.FC = () => {
                   </Box>
                 </Card>
                 {/* Right Panel  */}
-                <Card sx={{ flexBasis: '70%', m: '10px 20px', p: 2 }}>
+                <Card sx={{ flexBasis: "70%", m: "10px 20px", p: 2 }}>
                   <Stack
-                    direction='row'
+                    direction="row"
                     sx={{
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      borderBottom: '1px solid #e0e0e0',
-                    }}>
-                    <Typography variant='h4'>
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      borderBottom: "1px solid #e0e0e0",
+                    }}
+                  >
+                    <Typography variant="h4">
                       {description.MasterClasses.title}
                     </Typography>
-                    <Box sx={{ flexBasis: '20%' }}>
+                    <Box sx={{ flexBasis: "20%" }}>
                       <MasterClassTrainer description={description} />
                     </Box>
                   </Stack>
 
                   {description.MasterClasses.videoLink ? (
                     <CardMedia
-                      component='video'
+                      component="video"
                       controls
-                      height='450'
+                      height="450"
                       sx={{
                         padding: 1,
-                        objectFit: 'contain',
-                        cursor: 'pointer',
+                        objectFit: "contain",
+                        cursor: "pointer",
                       }}
                       src={description.MasterClasses.videoLink}
                     />
                   ) : (
                     <CardMedia
-                      component='img'
-                      height='450'
+                      component="img"
+                      height="450"
                       image={
                         description.MasterClasses.imageLink || EmptyImageLink
                       }
-                      alt={'masterClass image'}
+                      alt={"masterClass image"}
                       sx={{
                         m: 3,
                         padding: 1,
-                        objectFit: 'contain',
+                        objectFit: "contain",
                       }}
                     />
                   )}
@@ -210,8 +194,9 @@ const MasterClass: React.FC = () => {
                   <Box
                     sx={{
                       mb: 2,
-                      typography: 'body1',
-                    }}>
+                      typography: "body1",
+                    }}
+                  >
                     {description.MasterClasses.description}
                   </Box>
                 </Box>
@@ -225,6 +210,28 @@ const MasterClass: React.FC = () => {
                   />
                 </Box>
               </Card>
+              {currentUser?.Roles.role === "choreographer" && (
+                <Card sx={{ m: 2, p: 2 }}>
+                  <Typography variant="h5">List of requests:</Typography>
+                  {listOfUsers.map((user) => (
+                    <Stack sx={{ alignItems: "center", mt: 2 }} direction="row">
+                      <Box sx={{ mr: 2 }}>
+                        <Avatar
+                          sx={{ width: 50, height: 50 }}
+                          src={user.photoLink}
+                          alt=""
+                        />
+                      </Box>
+                      <Typography sx={{ fontSize: 21 }}>
+                        {user.name} {user.lastName}
+                      </Typography>
+                    </Stack>
+                  ))}
+                  {listOfUsers.length === 0 && (
+                    <Typography sx={{ fontSize: 18 }}>No Requests</Typography>
+                  )}
+                </Card>
+              )}
             </Card>
           </Box>
         );
