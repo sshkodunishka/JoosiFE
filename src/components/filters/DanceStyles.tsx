@@ -28,7 +28,7 @@ const DanceStyles: React.FC<Props> = (props) => {
               clickable
               variant='outlined'
               key={danceStyle.id}
-              sx={{ marginRight: 8, marginBottom: 8 }}
+              style={{ marginRight: 8, marginBottom: 8 }}
             />
           );
         })}

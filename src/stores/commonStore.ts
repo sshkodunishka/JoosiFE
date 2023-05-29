@@ -10,7 +10,7 @@ import {
 } from 'mobx';
 
 export class CommonStore {
-  appName = 'Joose';
+  appName = 'Joosi';
   accessToken = window.localStorage.getItem('accessToken');
   refreshToken = window.localStorage.getItem('refreshToken');
   appLoaded = false;

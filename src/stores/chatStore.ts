@@ -48,13 +48,22 @@ export class ChatStore {
         console.error('No socket');
         return;
       }
+      this.socket.on('history', (messages: Message[]) => {
+        runInAction(() => {
+          this.messages.push(...messages)
+        })
+      })
+
       this.socket.on('message', (message: Message) => {
         console.log('Message received', message);
         runInAction(() => {
           this.messages.push(message);
         });
       });
+
+      this.socket.emit('history');
     });
+
   }
 
   async sendMessage(message: string) {
